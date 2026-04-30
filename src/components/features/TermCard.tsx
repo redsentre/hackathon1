@@ -25,7 +25,7 @@ function TermCardComponent({ term, index, className = '' }: TermCardProps) {
       case 'low':
         return 'success';
       default:
-        return 'teal';
+        return 'primary';
     }
   };
 
@@ -38,7 +38,7 @@ function TermCardComponent({ term, index, className = '' }: TermCardProps) {
       case 'low':
         return 'bg-success/10 border-success/30 text-success';
       default:
-        return 'bg-teal/10 border-teal/30 text-teal';
+        return 'bg-primary/10 border-primary/30 text-primary';
     }
   };
 
@@ -76,7 +76,7 @@ function TermCardComponent({ term, index, className = '' }: TermCardProps) {
             )}
 
             <div className="flex items-start justify-between gap-3 mb-3">
-              <h3 className="text-lg font-display font-bold text-white">
+              <h3 className="text-lg font-display font-bold text-foreground">
                 {term.term}
               </h3>
               <div className="flex items-center gap-2 flex-shrink-0" aria-hidden="true">
@@ -85,7 +85,7 @@ function TermCardComponent({ term, index, className = '' }: TermCardProps) {
               </div>
             </div>
 
-            <div className="text-base text-muted-light mb-4">
+            <div className="text-base text-black mb-4">
               {term.explanation}
             </div>
 
@@ -98,7 +98,7 @@ function TermCardComponent({ term, index, className = '' }: TermCardProps) {
                   <div className="text-xs uppercase tracking-wider mb-1 opacity-70">
                     Bottom Line
                   </div>
-                  <p className="font-semibold text-sm">
+                  <p className="font-semibold text-sm text-black">
                     {term.bottomLine}
                   </p>
                 </div>
@@ -109,13 +109,13 @@ function TermCardComponent({ term, index, className = '' }: TermCardProps) {
               <div className="mt-3 p-3 rounded-lg bg-danger/10 border border-danger/20">
                 <div className="flex items-start gap-2">
                   <AlertTriangle className="w-4 h-4 text-danger flex-shrink-0 mt-0.5" aria-hidden="true" />
-                  <p className="text-sm text-danger/90">{term.predatoryReason}</p>
+                  <p className="text-sm text-black">{term.predatoryReason}</p>
                 </div>
               </div>
             )}
           </div>
 
-          <div className="flex items-center justify-center px-5 py-2 border-t border-white/5 bg-white/5">
+          <div className="flex items-center justify-center px-5 py-2 border-t border-primary/5 bg-primary/5">
             {isExpanded ? (
               <ChevronUp className="w-4 h-4 text-muted" aria-hidden="true" />
             ) : (

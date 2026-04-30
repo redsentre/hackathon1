@@ -76,14 +76,14 @@ Predatory Clauses: ${result.predatoryCount}
       <DocumentSummary result={result} />
 
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-display font-bold text-white">
+        <h3 className="text-lg font-display font-bold text-foreground">
           {result.termCount} Jargon Terms Found
         </h3>
         <div className="flex gap-2">
           <button
             onClick={handleCopySummary}
             aria-label="Copy summary to clipboard"
-            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/20 text-muted hover:border-white/40 hover:text-white transition-all text-sm"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-primary/20 text-muted hover:border-primary/40 hover:text-foreground transition-all text-sm"
           >
             {copied ? (
               <>
@@ -100,7 +100,7 @@ Predatory Clauses: ${result.predatoryCount}
           <button
             onClick={onReset}
             aria-label="Analyze a new document"
-            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/20 text-muted hover:border-white/40 hover:text-white transition-all text-sm"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-primary/20 text-muted hover:border-primary/40 hover:text-foreground transition-all text-sm"
           >
             <RefreshCw className="w-4 h-4" aria-hidden="true" />
             Analyze New
@@ -114,8 +114,8 @@ Predatory Clauses: ${result.predatoryCount}
           aria-label="Show all terms"
           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
             filter === 'all'
-              ? 'bg-teal text-white'
-              : 'bg-transparent text-muted border border-white/20 hover:border-white/40'
+              ? 'bg-primary text-background'
+              : 'bg-transparent text-muted border border-primary/20 hover:border-primary/40'
           }`}
         >
           All
@@ -125,8 +125,8 @@ Predatory Clauses: ${result.predatoryCount}
           aria-label="Show high risk terms"
           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
             filter === 'high-risk'
-              ? 'bg-teal text-white'
-              : 'bg-transparent text-muted border border-white/20 hover:border-white/40'
+              ? 'bg-primary text-background'
+              : 'bg-transparent text-muted border border-primary/20 hover:border-primary/40'
           }`}
         >
           High Risk
@@ -136,8 +136,8 @@ Predatory Clauses: ${result.predatoryCount}
           aria-label="Show predatory clauses"
           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
             filter === 'predatory'
-              ? 'bg-teal text-white'
-              : 'bg-transparent text-muted border border-white/20 hover:border-white/40'
+              ? 'bg-primary text-background'
+              : 'bg-transparent text-muted border border-primary/20 hover:border-primary/40'
           }`}
         >
           Predatory
@@ -149,8 +149,8 @@ Predatory Clauses: ${result.predatoryCount}
             aria-label={`Show ${cat} terms`}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
               filter === cat
-                ? 'bg-teal text-white'
-                : 'bg-transparent text-muted border border-white/20 hover:border-white/40'
+                ? 'bg-primary text-background'
+                : 'bg-transparent text-muted border border-primary/20 hover:border-primary/40'
             }`}
           >
             {cat}

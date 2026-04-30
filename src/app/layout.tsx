@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, DM_Sans } from "next/font/google";
+import { Montserrat, Inconsolata } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
-const display = Plus_Jakarta_Sans({
+const display = Montserrat({
   subsets: ["latin"],
+  weight: ["900"],
   variable: "--font-display",
   display: "swap",
 });
 
-const body = DM_Sans({
+const body = Inconsolata({
   subsets: ["latin"],
+  weight: ["400"],
   variable: "--font-body",
   display: "swap",
 });
@@ -27,26 +29,26 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-navy text-white font-body">
+      <body className="min-h-full flex flex-col bg-background text-foreground font-body">
         {children}
         <Toaster
           position="top-center"
           toastOptions={{
             style: {
-              background: '#0D2646',
-              color: '#ffffff',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              background: '#151617',
+              color: '#F8ECE4',
+              border: '1px solid #BAB6AA',
             },
             success: {
               iconTheme: {
                 primary: '#10B981',
-                secondary: '#0D2646',
+                secondary: '#151617',
               },
             },
             error: {
               iconTheme: {
                 primary: '#EF4444',
-                secondary: '#0D2646',
+                secondary: '#151617',
               },
             },
           }}

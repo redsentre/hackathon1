@@ -81,25 +81,25 @@ export function PdfUpload({ onFileExtracted, isLoading, className = '' }: PdfUpl
         {...getRootProps()}
         className={`relative border-2 border-dashed rounded-xl p-8 transition-all cursor-pointer ${
           isDragActive
-            ? 'border-teal bg-teal/5'
+            ? 'border-primary bg-primary/5'
             : error
             ? 'border-danger bg-danger/5'
             : success
             ? 'border-success bg-success/5'
-            : 'border-white/20 hover:border-white/40'
+            : 'border-primary/20 hover:border-primary/40'
         } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <input {...getInputProps()} />
 
         {isLoading ? (
           <div className="flex flex-col items-center gap-3">
-            <div className="w-12 h-12 border-3 border-teal/30 border-t-teal rounded-full animate-spin" />
+            <div className="w-12 h-12 border-3 border-primary/30 border-t-primary rounded-full animate-spin" />
             <p className="text-muted">Extracting text from PDF...</p>
           </div>
         ) : success ? (
           <div className="flex flex-col items-center gap-3">
             <CheckCircle className="w-12 h-12 text-success" />
-            <p className="text-white font-medium">Text extracted successfully</p>
+            <p className="text-foreground font-medium">Text extracted successfully</p>
             {fileName && (
               <p className="text-sm text-muted">
                 {fileName} · {fileSize} · {pageCount ? `${pageCount} pages` : ''}
@@ -116,13 +116,13 @@ export function PdfUpload({ onFileExtracted, isLoading, className = '' }: PdfUpl
           <div className="flex flex-col items-center gap-3">
             {isDragActive ? (
               <>
-                <Upload className="w-12 h-12 text-teal" />
-                <p className="text-white font-medium">Drop your PDF here</p>
+                <Upload className="w-12 h-12 text-primary" />
+                <p className="text-foreground font-medium">Drop your PDF here</p>
               </>
             ) : (
               <>
                 <FileText className="w-12 h-12 text-muted" />
-                <p className="text-white font-medium">
+                <p className="text-foreground font-medium">
                   Drop a PDF here or click to upload
                 </p>
                 <p className="text-sm text-muted">

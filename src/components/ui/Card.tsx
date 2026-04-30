@@ -3,12 +3,12 @@ import { ReactNode } from 'react';
 interface CardProps {
   children: ReactNode;
   className?: string;
-  glowColor?: 'teal' | 'danger' | 'warn' | 'success';
+  glowColor?: 'primary' | 'danger' | 'warn' | 'success';
 }
 
 export function Card({ children, className = '', glowColor }: CardProps) {
   const glowStyles = {
-    teal: 'border-l-4 border-l-teal',
+    primary: 'border-l-4 border-l-primary',
     danger: 'border-l-4 border-l-danger',
     warn: 'border-l-4 border-l-warn',
     success: 'border-l-4 border-l-success',
@@ -16,7 +16,7 @@ export function Card({ children, className = '', glowColor }: CardProps) {
 
   return (
     <div
-      className={`bg-navy-mid border border-white/10 rounded-xl shadow-lg ${glowColor ? glowStyles[glowColor] : ''} ${className}`}
+      className={`bg-secondary-1 border border-primary/10 rounded-xl shadow-lg ${glowColor ? glowStyles[glowColor] : ''} ${className}`}
     >
       {children}
     </div>

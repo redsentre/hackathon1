@@ -63,8 +63,8 @@ export function InteractiveQA({ documentText, language, className = '' }: Intera
   return (
     <div className={`space-y-4 ${className}`}>
       <Card className="p-5">
-        <h3 className="text-lg font-display font-bold text-white mb-4 flex items-center gap-2">
-          <MessageSquare className="w-5 h-5 text-teal" />
+        <h3 className="text-lg font-display font-bold text-foreground mb-4 flex items-center gap-2">
+          <MessageSquare className="w-5 h-5 text-primary" />
           Ask ArthSaathi
         </h3>
 
@@ -75,17 +75,17 @@ export function InteractiveQA({ documentText, language, className = '' }: Intera
             onChange={handleQuestionChange}
             placeholder="Ask a question about this document..."
             aria-label="Question input"
-            className="flex-1 px-4 py-2.5 bg-navy border border-white/10 rounded-lg text-white placeholder-muted focus:outline-none focus:ring-2 focus:ring-teal/50 focus:border-teal/50 transition-all"
+            className="flex-1 px-4 py-2.5 bg-secondary-1 border border-primary/10 rounded-lg text-foreground placeholder-muted focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
             disabled={isLoading}
           />
           <button
             type="submit"
             disabled={!question.trim() || isLoading}
             aria-label="Submit question"
-            className="px-4 py-2.5 rounded-lg bg-teal text-white font-medium hover:bg-teal/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-4 py-2.5 rounded-lg bg-primary text-background font-medium hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {isLoading ? (
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true" />
+              <div className="w-4 h-4 border-2 border-background/30 border-t-background rounded-full animate-spin" aria-hidden="true" />
             ) : (
               <>
                 <Send className="w-4 h-4" aria-hidden="true" />
@@ -105,19 +105,19 @@ export function InteractiveQA({ documentText, language, className = '' }: Intera
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
           >
-            <Card className="p-4 bg-teal/5 border-teal/20">
+            <Card className="p-4 bg-primary/5 border-primary/20">
               <div className="space-y-3">
                 <div className="flex items-start gap-2">
-                  <div className="w-6 h-6 rounded-full bg-teal/20 flex items-center justify-center flex-shrink-0">
-                    <span className="text-xs font-medium text-teal">Q</span>
+                  <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                    <span className="text-xs font-medium text-primary">Q</span>
                   </div>
-                  <p className="text-sm text-white font-medium">{pair.question}</p>
+                  <p className="text-sm text-foreground font-medium">{pair.question}</p>
                 </div>
                 <div className="flex items-start gap-2">
-                  <div className="w-6 h-6 rounded-full bg-navy-mid flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 rounded-full bg-secondary-1 flex items-center justify-center flex-shrink-0">
                     <span className="text-xs font-medium text-muted">A</span>
                   </div>
-                  <p className="text-sm text-muted-light">{pair.answer}</p>
+                  <p className="text-sm text-black">{pair.answer}</p>
                 </div>
               </div>
             </Card>

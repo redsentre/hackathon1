@@ -15,8 +15,8 @@ export function LanguageToggle({ language, onLanguageChange, className = '' }: L
         onClick={() => onLanguageChange('en')}
         className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
           language === 'en'
-            ? 'bg-teal text-white'
-            : 'bg-transparent text-muted border border-white/20 hover:border-white/40'
+            ? 'bg-primary text-background'
+            : 'bg-transparent text-muted border border-primary/20 hover:border-primary/40'
         }`}
       >
         EN
@@ -25,8 +25,8 @@ export function LanguageToggle({ language, onLanguageChange, className = '' }: L
         onClick={() => onLanguageChange('hi')}
         className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
           language === 'hi'
-            ? 'bg-teal text-white'
-            : 'bg-transparent text-muted border border-white/20 hover:border-white/40'
+            ? 'bg-primary text-background'
+            : 'bg-transparent text-muted border border-primary/20 hover:border-primary/40'
         }`}
       >
         हिन्दी

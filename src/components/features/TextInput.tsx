@@ -40,7 +40,7 @@ export function TextInput({ onAnalyze, isLoading, className = '' }: TextInputPro
           placeholder="Paste your loan agreement, insurance policy, or financial T&C here..."
           aria-label="Document text input"
           aria-describedby="char-count"
-          className={`w-full min-h-[200px] p-4 bg-navy-mid border border-white/10 rounded-xl text-white placeholder-muted resize-none focus:outline-none focus:ring-2 focus:ring-teal/50 focus:border-teal/50 transition-all ${
+          className={`w-full min-h-[200px] p-4 bg-secondary-1 border border-primary/10 rounded-xl text-foreground placeholder-muted resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all ${
             isAtLimit ? 'ring-2 ring-danger/50 border-danger' : ''
           }`}
           disabled={isLoading}
@@ -65,7 +65,7 @@ export function TextInput({ onAnalyze, isLoading, className = '' }: TextInputPro
           onClick={handleLoadSample}
           disabled={isLoading}
           aria-label="Load sample text"
-          className="px-4 py-2.5 rounded-lg border border-white/20 text-muted hover:border-white/40 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+          className="px-4 py-2.5 rounded-lg border border-primary/20 text-muted hover:border-primary/40 hover:text-foreground transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
         >
           Load Sample Text
         </button>
@@ -73,11 +73,11 @@ export function TextInput({ onAnalyze, isLoading, className = '' }: TextInputPro
           onClick={handleAnalyze}
           disabled={!text.trim() || isLoading || isAtLimit}
           aria-label="Analyze document"
-          className="flex-1 flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-teal text-white font-medium hover:bg-teal/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-teal shadow-lg shadow-teal/20"
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-primary text-background font-medium hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary shadow-lg shadow-primary/20"
         >
           {isLoading ? (
             <>
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true" />
+              <div className="w-4 h-4 border-2 border-background/30 border-t-background rounded-full animate-spin" aria-hidden="true" />
               Analyzing...
             </>
           ) : (

@@ -59,12 +59,12 @@ export function InputSection({ onAnalyze, isLoading, className = '', language: p
             aria-selected={activeTab === 'text'}
             aria-controls="text-panel"
             className={`px-4 py-2 text-sm font-medium transition-all relative ${
-              activeTab === 'text' ? 'text-white' : 'text-muted hover:text-white'
+              activeTab === 'text' ? 'text-foreground' : 'text-muted hover:text-foreground'
             }`}
           >
             Paste Text
             {activeTab === 'text' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal rounded-full" />
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
             )}
           </button>
           <button
@@ -73,12 +73,12 @@ export function InputSection({ onAnalyze, isLoading, className = '', language: p
             aria-selected={activeTab === 'pdf'}
             aria-controls="pdf-panel"
             className={`px-4 py-2 text-sm font-medium transition-all relative ${
-              activeTab === 'pdf' ? 'text-white' : 'text-muted hover:text-white'
+              activeTab === 'pdf' ? 'text-foreground' : 'text-muted hover:text-foreground'
             }`}
           >
             Upload PDF
             {activeTab === 'pdf' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal rounded-full" />
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
             )}
           </button>
         </div>

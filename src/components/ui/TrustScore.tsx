@@ -33,7 +33,7 @@ export function TrustScore({ score, label, className = '' }: TrustScoreProps) {
             cx="48"
             cy="48"
             r="45"
-            stroke="#0D2646"
+            stroke="#BAB6AA"
             strokeWidth="6"
             fill="none"
           />
@@ -52,7 +52,7 @@ export function TrustScore({ score, label, className = '' }: TrustScoreProps) {
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-2xl font-bold text-white">{score}</span>
+          <span className="text-2xl font-bold text-foreground">{score}</span>
         </div>
       </div>
       <span className="mt-2 text-xs text-muted text-center max-w-32">{label}</span>
