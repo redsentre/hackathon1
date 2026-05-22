@@ -5,8 +5,8 @@ export async function extractTextFromPDF(buffer: Buffer): Promise<{ text: string
     console.log('Starting PDF extraction with pdf2json, buffer size:', buffer.length);
 
     // Dynamic import to avoid issues with Node.js environment
-    const PDFParser = (await import('pdf2json')).default;
-
+   const mod = await import('pdf2json');
+   const PDFParser = mod.default ?? mod;
     return new Promise((resolve, reject) => {
       const pdfParser = new PDFParser();
 
