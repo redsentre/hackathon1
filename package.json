@@ -9,8 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@napi-rs/canvas": "^0.1.100",
     "framer-motion": "^12.38.0",
+    "groq-sdk": "^1.2.0",
     "lucide-react": "^1.14.0",
     "next": "16.2.4",
     "openai": "^6.35.0",

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getOpenAIClient } from '@/lib/openai';
+import Groq from 'groq-sdk';
 import { extractTextFromPDF } from '@/lib/pdfParser';
 import { MAX_TEXT_LENGTH, MAX_PDF_SIZE_MB } from '@/lib/constants';
 import type { AnalyzeRequest, AnalyzeResponse } from '@/types';
@@ -29,43 +29,23 @@ Always respond with valid JSON matching this EXACT structure:
     {
       "term": "exact term or phrase from text",
       "explanation": "extremely simple explanation in 2-3 sentences using everyday language. Explain what it means, why it matters, and how it affects the user. Use analogies like comparing to renting a house or sharing expenses.",
-      "bottomLine": "the single most important financial impact for the user in the simplest possible terms. Be direct and specific. Examples: 'They can take your house if you miss 3 payments.' or 'This is a hidden fee that costs you extra money.' or 'This means they won't pay for everything if you get sick.'",
+      "bottomLine": "the single most important financial impact for the user in the simplest possible terms. Be direct and specific.",
       "riskLevel": "low" | "medium" | "high",
       "isPredatory": boolean,
       "predatoryReason": "simple explanation of why this clause unfairly benefits the company or traps the consumer — null if not predatory",
       "category": "one of: Loan Terms, Interest, Penalty, Insurance, Legal, Investment, Coverage, Exclusions, Fees, General"
     }
   ],
-  "summary": "simple 3-4 sentence summary explaining what this document is, what the user is agreeing to, and the most important things they need to know before signing. Use everyday language.",
+  "summary": "simple 3-4 sentence summary explaining what this document is, what the user is agreeing to, and the most important things they need to know before signing.",
   "overallRisk": "low" | "medium" | "high",
-  "documentType": "accurate type of document based on content - e.g. Home Loan Agreement, Health Insurance Policy, Credit Card T&C, Mutual Fund Scheme, Fixed Deposit Terms, Car Insurance, Personal Loan, Investment Advisory, Term Insurance, ULIP, PPF, etc.",
+  "documentType": "accurate type of document based on content",
   "keyWarnings": ["simple warning 1", "simple warning 2", "simple warning 3"],
   "termCount": number,
   "predatoryCount": number,
-  "trustScore": number between 0 and 100 (100 = fully transparent, consumer-friendly; 0 = highly opaque, predatory),
+  "trustScore": number between 0 and 100,
   "trustScoreLabel": "one of: Very Low Transparency, Low Transparency, Moderate Clarity, Fairly Clear, Consumer-Friendly"
 }
 
-DOCUMENT TYPE DETECTION - Be accurate:
-- Loan Agreement: Contains "borrower", "lender", "principal", "EMI", "interest rate", "tenure"
-- Health Insurance: Contains "sum insured", "hospitalization", "pre-existing", "waiting period", "room rent"
-- Life Insurance: Contains "sum assured", "nominee", "maturity", "death benefit", "premium"
-- Credit Card: Contains "credit limit", "minimum due", "finance charge", "late payment fee"
-- Mutual Fund: Contains "NAV", "units", "expense ratio", "exit load", "SIP"
-- Fixed Deposit: Contains "tenure", "maturity amount", "interest rate", "premature withdrawal"
-- Investment Advisory: Contains "advisory", "disclaimer", "risk factors", "recommendations"
-
-Risk level guidelines:
-- low: Standard terms, consumer-friendly, common knowledge, no hidden costs
-- medium: Important terms the user must understand before signing — could cost money if misread, requires attention
-- high: Terms that could significantly harm the user financially if misunderstood, hidden costs, one-sided clauses
-
-Predatory flag: true if the clause could trap a consumer, hide costs, restrict rights, unfairly benefit the company, or create situations where the user loses money through no fault of their own.
-
-Trust Score: Rate the overall document on clarity, fairness, and transparency. Penalize heavily for: buried fees, acceleration clauses, general liens, one-sided penalty structures, vague language, hidden exclusions, unfair termination rights, confusing calculations.
-
-BE THOROUGH, ACCURATE, AND EXTREMELY SIMPLE. The user's financial future depends on understanding this document completely.
-Analyze THIS SPECIFIC DOCUMENT, not generic financial advice.
 Do not include any text outside the JSON object.`;
 
 export async function POST(req: NextRequest) {
@@ -108,7 +88,6 @@ export async function POST(req: NextRequest) {
       const result = await extractTextFromPDF(buffer);
 
       if (!result.text || result.text.length === 0) {
-        console.error('PDF parsing failed or returned empty text');
         return NextResponse.json<AnalyzeResponse>(
           { success: false, error: 'Could not extract text from PDF. The file might be corrupted, password-protected, or image-based (scanned). Please try a different PDF.' },
           { status: 400 }
@@ -116,7 +95,6 @@ export async function POST(req: NextRequest) {
       }
 
       text = result.text;
-
       console.log('PDF parsed successfully, text length:', text.length, 'pages:', result.pageCount);
     } else {
       const body: AnalyzeRequest = await req.json();
@@ -138,50 +116,37 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const openai = getOpenAIClient();
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-    console.log('OpenAI client created, apiKey exists:', !!openai.apiKey);
+    const userPrompt = `${SYSTEM_PROMPT}
 
-    if (!openai.apiKey) {
-      console.error('OpenAI API key is missing');
-      return NextResponse.json<AnalyzeResponse>(
-        { success: false, error: 'Server configuration error' },
-        { status: 500 }
-      );
-    }
-
-    console.log('Calling OpenAI API with text length:', text.length);
-
-    const userPrompt = `Analyze this financial text and identify all jargon terms.
 Output language for explanations: ${language === 'hi' ? 'Hindi' : 'English'}
 
 Text to analyze:
 ${text}`;
 
-    const response = await openai.chat.completions.create({
-      model: process.env.NVIDIA_MODEL || 'openai/gpt-oss-120b',
+    console.log('Calling Groq API with text length:', text.length);
+
+    const result = await groq.chat.completions.create({
+      model: 'llama-3.3-70b-versatile',
       temperature: 0.2,
       max_tokens: 8000,
-      response_format: { type: 'json_object' },
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user', content: userPrompt },
-      ],
+      messages: [{ role: 'user', content: userPrompt }],
     });
 
-    console.log('OpenAI response received');
-    const content = response.choices[0]?.message?.content;
-    console.log('Response content length:', content?.length);
+    const content = result.choices[0]?.message?.content;
+    console.log('Groq response received, length:', content?.length);
 
     if (!content) {
-      console.error('No content in OpenAI response');
       return NextResponse.json<AnalyzeResponse>(
         { success: false, error: 'Failed to analyze document' },
         { status: 500 }
       );
     }
 
-    const data = JSON.parse(content);
+    // Strip markdown code blocks if present
+    const cleanContent = content.replace(/```json\n?|\n?```/g, '').trim();
+    const data = JSON.parse(cleanContent);
     console.log('Parsed data, terms count:', data.terms?.length);
 
     return NextResponse.json<AnalyzeResponse>({
