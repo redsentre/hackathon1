@@ -130,7 +130,7 @@ ${text}`;
     const result = await groq.chat.completions.create({
       model: 'llama-3.3-70b-versatile',
       temperature: 0.2,
-      max_tokens: 8000,
+      max_tokens: 3000,
       messages: [{ role: 'user', content: userPrompt }],
     });
 
