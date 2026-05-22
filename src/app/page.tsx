@@ -192,7 +192,7 @@ export default function Home() {
         <section className="max-w-4xl mx-auto px-4 py-16">
           <details className="group">
             <summary className="cursor-pointer text-sm text-muted hover:text-foreground transition-colors">
-              Future Scope (for judges)
+              Future Scope:
             </summary>
             <div className="mt-4 pt-4 border-t border-primary/10 space-y-2 text-sm text-muted">
               <p>• Browser extension for real-time translation on any financial webpage</p>
