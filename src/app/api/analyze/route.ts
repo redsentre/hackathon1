@@ -4,7 +4,7 @@ import { extractTextFromPDF } from '@/lib/pdfParser';
 import { MAX_TEXT_LENGTH, MAX_PDF_SIZE_MB } from '@/lib/constants';
 import type { AnalyzeRequest, AnalyzeResponse, AnalysisResult, JargonTerm } from '@/types';
  
- // ============================================================
+// ============================================================
 // ARTHSAATHI — MASTER ANALYSIS SYSTEM PROMPT
 // Version 2.0 | Engineered for Financial & Legal Documents
 // ============================================================
@@ -195,7 +195,7 @@ Do not include any text outside the JSON object.
       "whyItMatters": "The commercial or legal significance of this clause — why should the reader care",
       "riskLevel": "low | medium | high | critical",
       "riskBearing": "Which party bears the risk or obligation — 'franchisor', 'franchisee', 'lender', 'borrower', 'both', etc.",
-      "isFavorableToStrongerParty": true or false,
+      "isFavorableToStrongerParty": true,
       "keyQuestionsToAsk": [
         "Specific question 1 that should be asked before signing regarding this clause",
         "Specific question 2 if applicable"
@@ -240,20 +240,20 @@ Do not include any text outside the JSON object.
   },
  
   "overallAssessment": {
-    "fairnessScore": "number 0-100 (100 = perfectly balanced, 0 = entirely one-sided)",
+    "fairnessScore": 50,
     "fairnessLabel": "one of: Heavily One-Sided, Significantly Skewed, Moderate Imbalance, Reasonably Balanced, Well-Balanced",
     "powerBalance": "Plain assessment of which party has more protection and leverage under this agreement",
     "recommendation": "one of: Proceed with Caution | Seek Legal Advice Before Signing | Negotiate Key Clauses | Acceptable with Minor Modifications | Do Not Sign Without Major Changes",
     "recommendationReason": "2-3 sentences explaining the recommendation",
     "topThreeRisks": [
       "Risk 1 in one clear sentence",
-      "Risk 2 in one clear sentence", 
+      "Risk 2 in one clear sentence",
       "Risk 3 in one clear sentence"
     ]
   },
  
-  "termCount": "Total number of clauses analyzed",
-  "criticalFlagCount": "Number of critical flags raised"
+  "termCount": 11,
+  "criticalFlagCount": 3
 }
  
 Do not include any text outside the JSON object.`;
@@ -380,20 +380,16 @@ export async function POST(req: NextRequest) {
  
     const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
  
-    const userPrompt = `${SYSTEM_PROMPT}
- 
-Output language for explanations: ${language === 'hi' ? 'Hindi' : 'English'}
- 
-Text to analyze:
-${text}`;
- 
     console.log('Calling Groq API with text length:', text.length);
  
     const groqResult = await groq.chat.completions.create({
       model: 'llama-3.3-70b-versatile',
       temperature: 0.2,
-      max_tokens: 6000,  // raised from 3000 — new prompt output is much larger
-      messages: [{ role: 'user', content: userPrompt }],
+      max_tokens: 8000,
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'user', content: `Output language: ${language === 'hi' ? 'Hindi' : 'English'}\n\nText to analyze:\n${text}` },
+      ],
     });
  
     const content = groqResult.choices[0]?.message?.content;
