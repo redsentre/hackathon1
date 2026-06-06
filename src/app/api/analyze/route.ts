@@ -386,6 +386,7 @@ export async function POST(req: NextRequest) {
       model: 'llama-3.3-70b-versatile',
       temperature: 0.2,
       max_tokens: 8000,
+      response_format: { type: 'json_object' },
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: `Output language: ${language === 'hi' ? 'Hindi' : 'English'}\n\nText to analyze:\n${text}` },
