@@ -394,7 +394,7 @@ export async function POST(req: NextRequest) {
  
     const content = groqResult.choices[0]?.message?.content;
     console.log('Groq response received, length:', content?.length);
- 
+    console.log('Finish reason:', groqResult.choices[0]?.finish_reason); // ADD THIS
     if (!content) {
       return NextResponse.json<AnalyzeResponse>(
         { success: false, error: 'Failed to analyze document' },
