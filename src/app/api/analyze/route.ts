@@ -144,6 +144,9 @@ OPERATIONAL RED FLAGS:
 □ Requirements to appoint specific personnel or brand ambassadors
 □ Obligations to host events at own cost
  
+CRITICAL: You MUST analyze EVERY clause in the document. Be concise — 
+each clauseAnalysis entry must be under 200 words total. 
+Do not write long explanations. Cover all clauses, brevity over detail.
 ════════════════════════════════════════
 PART 5: OUTPUT FORMAT
 ════════════════════════════════════════
@@ -187,22 +190,19 @@ Do not include any text outside the JSON object.
   },
  
   "clauseAnalysis": [
-    {
-      "clauseId": "Clause number or section reference from document",
-      "clauseTitle": "Name of this clause/section",
-      "category": "one of: Financial, Legal Rights, Intellectual Property, Termination, Dispute Resolution, Obligations, Exclusivity, Ownership & Transfer, Governance, Confidentiality, Force Majeure, Indemnity, General",
-      "whatItSays": "Plain English explanation of what this clause actually means — no legal jargon. State the consequence clearly.",
-      "whyItMatters": "The commercial or legal significance of this clause — why should the reader care",
-      "riskLevel": "low | medium | high | critical",
-      "riskBearing": "Which party bears the risk or obligation — 'franchisor', 'franchisee', 'lender', 'borrower', 'both', etc.",
-      "isFavorableToStrongerParty": true,
-      "keyQuestionsToAsk": [
-        "Specific question 1 that should be asked before signing regarding this clause",
-        "Specific question 2 if applicable"
-      ],
-      "negotiationSuggestion": "What a party could reasonably ask to change or clarify in this clause — or 'Standard — acceptable as is'"
-    }
-  ],
+  {
+    "clauseId": "Clause number e.g. Clause 1",
+    "clauseTitle": "Short name, max 5 words",
+    "category": "one of: Financial, Legal Rights, Intellectual Property, Termination, Dispute Resolution, Obligations, Exclusivity, Ownership & Transfer, Governance, Confidentiality, Force Majeure, Indemnity, General",
+    "whatItSays": "Max 2 sentences. Plain English only.",
+    "whyItMatters": "Max 1 sentence.",
+    "riskLevel": "low | medium | high | critical",
+    "riskBearing": "franchisee | franchisor | both | borrower | lender",
+    "isFavorableToStrongerParty": true,
+    "keyQuestionsToAsk": ["One question only"],
+    "negotiationSuggestion": "Max 1 sentence."
+  }
+],
  
   "criticalFlags": [
     {
