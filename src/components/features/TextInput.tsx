@@ -14,7 +14,7 @@ export function TextInput({ onAnalyze, isLoading, className = '' }: TextInputPro
   const [text, setText] = useState('');
 
   const charCount = text.length;
-  const isNearLimit = charCount >= 3500;
+  const isNearLimit = charCount >= MAX_TEXT_LENGTH * 0.85;
   const isAtLimit = charCount >= MAX_TEXT_LENGTH;
 
   const handleLoadSample = useCallback(() => {
