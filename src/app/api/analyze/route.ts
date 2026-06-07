@@ -247,6 +247,10 @@ For INTEREST RATE clauses:
 - Bottom line must name all three rates with numbers explicitly
  
 For INSURANCE clauses in loan documents:
+- First check whether two clauses contradict each other on the same product.
+  If they do, the card must open with: "Clause [X] and Clause [Y] directly
+  contradict each other — Clause [Y] overrides Clause [X]." Do not treat
+  them as two separate cards.
 - If insurance appears in two clauses with contradictory treatment, flag both
   clause numbers explicitly: "Clause [X] says optional. Clause [Y] has already
   added INR [amount] to your loan principal by default. You have [Z] days from
