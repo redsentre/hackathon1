@@ -268,7 +268,7 @@ export async function POST(req: NextRequest) {
     // Run both calls in parallel
     const [summaryResult, clausesResult] = await Promise.all([
       groq.chat.completions.create({
-        model: 'llama-3.3-70b-versatile',
+        model: 'meta-llama/llama-4-scout-17b-16e-instruct',
         temperature: 0.2,
         max_tokens: 4000,
         messages: [
@@ -277,7 +277,7 @@ export async function POST(req: NextRequest) {
         ],
       }),
       groq.chat.completions.create({
-        model: 'llama-3.3-70b-versatile',
+        model: 'meta-llama/llama-4-scout-17b-16e-instruct',
         temperature: 0.2,
         max_tokens: 6000,
         messages: [
