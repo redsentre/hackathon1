@@ -35,7 +35,7 @@ FINANCIAL SNAPSHOT:
 - Capture EVERY financial obligation — upfront fees, recurring fees, setup costs,
   penalties, renewal fees, hidden costs
 - For employment contracts: separate fixed vs variable pay and state the guaranteed
-  monthly take-home amount explicitly
+  monthly take-home amount explicitly as (fixed component ÷ 12)
 - For franchise/commercial agreements: state total day-one exposure (all costs needed
   before operations begin), not just the headline fee
 - hiddenOrAdditionalCosts must list every cost not in the headline number
@@ -45,25 +45,28 @@ TOP THREE RISKS — each must contain:
 - The exact mechanism (what triggers it)
 - The exact numbers or timeframes involved
 - The worst realistic outcome for the weaker party in one concrete sentence
-- Example: "Clause 7 — Franchisor can terminate immediately with no notice or cure
-  period if payment is even 3 days late; the Franchisee loses their entire INR 40-55L
-  investment with no recourse"
+- Example: "Clause 7 — Employer can terminate immediately citing 'non-performance'
+  which it defines unilaterally, with no cure period and zero severance; the Employee
+  loses their job and all unvested ESOP with no legal recourse except arbitration
+  with a Company-appointed arbitrator"
  
 CRITICAL FLAGS — for every document, always check and flag if present:
 - Any clause where "cause" or "performance" is defined solely by the stronger party
-  (blank cheque for termination without severance)
-- Any clause covering work done outside working hours or without company resources
-  (means personal side projects belong to the company)
-- Any IP clause where innovations made BY the weaker party vest in the stronger party
+  (blank cheque for termination without severance while calling it "for cause")
+- Any IP clause covering work done OUTSIDE working hours or WITHOUT company resources
+  (this means personal side projects built on personal devices belong to the company)
+- Any IP clause that does NOT explicitly exclude pre-employment work — flag the gap
+- Any ESOP clause — always state: (a) the vesting cliff, (b) what is forfeited on
+  termination before the cliff, (c) the exact post-termination exercise window,
+  and (d) what happens to vested options if the window lapses
 - Any probation period that can be extended unilaterally — state the maximum possible
   duration, not just the initial period
-- Any non-compete where the compensation paid is less than 25% of the employee's
-  annual salary — flag this as inadequate compensation
+- Any non-compete — always calculate: monthly compensation × duration = total paid,
+  then express as a percentage of annual salary. Flag if under 25% as inadequate.
 - Any arbitration clause where the arbitrator is appointed by the stronger party
 - Any clause waiving access to courts, labour tribunals, or consumer forums
 - Any termination clause with no cure period or less than 7 days cure period
-- Any indemnity clause where the weaker party indemnifies the stronger party even
-  for the stronger party's own actions, guidelines, or products
+- Any confidentiality clause with no end date ("at any time thereafter" = perpetual)
  
 Always respond with valid JSON matching this EXACT structure.
 Do not include any text outside the JSON object.
@@ -85,7 +88,7 @@ Do not include any text outside the JSON object.
   },
   "executiveSummary": "4-5 sentences for a busy professional. State: (1) document type and parties, (2) exact key financial terms with numbers, (3) the top 2-3 specific risks with clause numbers and exact mechanisms, (4) which party holds more power and why. No jargon. No vague language. Be specific with every number.",
   "financialSnapshot": {
-    "totalCommitmentSummary": "Total financial exposure with exact numbers — for employment: state guaranteed annual CTC vs total CTC and guaranteed monthly take-home; for franchise: state total day-one exposure range before operations begin",
+    "totalCommitmentSummary": "Total financial exposure with exact numbers — for employment: state guaranteed annual CTC vs total CTC, guaranteed monthly take-home (fixed ÷ 12), and what portion is at the employer's sole discretion; for franchise: state total day-one exposure range before operations begin",
     "immediatePaymentOnSigning": "Exact amount due immediately on signing or null",
     "keyPaymentMilestones": [
       {
@@ -113,12 +116,12 @@ Do not include any text outside the JSON object.
   ],
   "sectionSummaries": {
     "parties": "Who the parties are, their roles, and the power dynamic",
-    "financialTerms": "Complete summary of all money with exact figures — guaranteed vs discretionary",
-    "intellectualProperty": "Who owns what IP — explicitly state if innovations or work done OUTSIDE working hours or WITHOUT company resources vest in the stronger party",
+    "financialTerms": "Complete summary of all money with exact figures — guaranteed vs discretionary, guaranteed monthly take-home stated explicitly",
+    "intellectualProperty": "Who owns what IP — explicitly state if work done OUTSIDE working hours or WITHOUT company resources vests in the stronger party; explicitly state whether pre-employment work is excluded or not addressed",
     "obligations": "Key ongoing obligations of each party with specifics — include moonlighting, social media, approval requirements",
-    "termination": "Every exact trigger for termination — list each one with the exact threshold, timeframe, and whether cause is defined subjectively",
+    "termination": "Every exact trigger for termination — list each one with the exact threshold, timeframe, and whether cause is defined subjectively by the stronger party",
     "disputeResolution": "Exactly how disputes are resolved, who appoints arbitrators, seat of arbitration, whether courts or labour tribunals are waived",
-    "exitAndTransfer": "Exact post-termination obligations — non-compete scope, distance or industry, duration, compensation paid for non-compete if any"
+    "exitAndTransfer": "Exact post-termination obligations — non-compete scope, duration, exact monthly compensation, total compensation as percentage of annual salary, ESOP exercise window and lapse consequences"
   },
   "negotiationPriorityList": [
     {
@@ -131,7 +134,7 @@ Do not include any text outside the JSON object.
   "regulatoryContext": {
     "applicableLaws": ["Specific laws referenced or applicable — for employment include Industrial Disputes Act, for franchise include Consumer Protection Act"],
     "complianceRequirements": ["Specific compliance obligations"],
-    "potentiallyProblematicClauses": ["Clauses that may conflict with applicable law — e.g. waiver of labour tribunal access may be unenforceable under Indian law"]
+    "potentiallyProblematicClauses": ["Clauses that may conflict with applicable law — e.g. waiver of labour tribunal access may be unenforceable under Indian law; non-compete enforceability under Section 27 of the Indian Contract Act"]
   },
   "overallAssessment": {
     "fairnessScore": 50,
@@ -171,83 +174,113 @@ SPECIFIC PATTERNS TO ALWAYS CATCH:
  
 For COMPENSATION clauses:
 - State fixed vs variable split explicitly with exact amounts
-- Calculate the guaranteed monthly take-home (fixed component ÷ 12)
+- Calculate and state the guaranteed monthly take-home as: fixed component ÷ 12 = INR X
 - State who determines variable pay and on what basis
-- Flag if the company can restructure CTC — state the floor
+- Flag if the company can restructure CTC — state the guaranteed floor
+- Be explicit: "Your guaranteed monthly take-home is INR X, not INR Y (total CTC ÷ 12)"
  
 For PROBATION clauses:
 - State the initial period AND the maximum possible extension period
+- State the total maximum probation duration (initial + maximum extension)
 - State the notice period during probation with exact hours/days
 - State the notice period after confirmation
-- Flag: during probation the employee has almost no job security
+- Flag explicitly: "This means the Employee has almost no job security for up to
+  [maximum duration] — termination with only [X hours/days] notice is possible
+  for the entire probation period"
+ 
+For ESOP / STOCK OPTION clauses — ALL FOUR points are MANDATORY, never omit any:
+- (1) State the vesting schedule with exact cliff and monthly vesting after cliff
+- (2) State exactly what happens on termination before the cliff: "All [X] options
+  are forfeited — the Employee receives nothing regardless of time served"
+- (3) State the post-termination exercise window: "Vested options MUST be exercised
+  within [X] days of termination — after that they lapse permanently and cannot
+  be recovered"
+- (4) State the Company's right to modify the ESOP scheme and what that means
  
 For IP / INTELLECTUAL PROPERTY clauses:
-- If the clause covers work done OUTSIDE working hours: explicitly state this —
-  "this clause means personal side projects, apps, or ideas developed on your
-  own time and on your own devices during the employment period belong to the company"
-- If innovations or improvements made BY the weaker party vest in the stronger party:
-  state this explicitly with the irrevocable assignment language
-- Flag the moral rights waiver if present
+- State clearly whether the clause covers work done OUTSIDE working hours:
+  if yes, write explicitly: "This clause covers work done outside working hours
+  and on personal devices — this means any app, tool, side project, or idea
+  you develop during your employment period belongs to the Company, even if
+  you built it at home on your own laptop"
+- State clearly the distinction between pre-joining and post-joining work:
+  "Work you created BEFORE joining is not explicitly excluded by this clause.
+  Any improvement, update, or feature you add to a pre-existing personal project
+  AFTER joining belongs to the Company under this clause."
+- Never say "may claim" or "could claim" if the clause is unambiguous — use
+  "the Company owns" or "vests exclusively in the Company"
+- State the irrevocable assignment and moral rights waiver if present
  
-For NON-COMPETE clauses:
-- State the exact duration, geographic or industry scope
-- State the exact monthly compensation paid for the non-compete
-- Calculate total compensation paid vs annual salary as a percentage
-- Flag if compensation is less than 25% of annual salary as inadequate
-- Example: "INR 10,000/month for 12 months = INR 1,20,000 total, which is 5% of
-  the INR 24,00,000 annual CTC — this is grossly inadequate compensation for a
-  12-month career restriction"
+For NON-COMPETE clauses — the calculation is MANDATORY, never omit:
+- State the exact duration and scope (industry, geography)
+- State the exact monthly non-compete compensation
+- Calculate and state: "[monthly amount] × [months] = INR [total] total non-compete
+  compensation, which is [X]% of the INR [annual CTC] annual salary"
+- Flag if under 25% of annual salary: "This is grossly inadequate — the Employee
+  gives up [X months] of career options worth potentially INR [annual salary prorated]
+  in exchange for INR [total] total"
+- Note enforceability: non-competes are generally unenforceable in India under
+  Section 27 of the Indian Contract Act, but the non-solicitation of employees
+  and customers may be enforceable
  
 For TERMINATION clauses:
 - List every single trigger with its exact threshold
-- Flag if "cause" or "non-performance" is defined solely by the stronger party
-  — this is effectively termination without cause while avoiding severance
+- Flag explicitly if "cause" or "non-performance" is defined solely by the stronger party:
+  "The Company alone decides what constitutes 'non-performance' — this is a blank cheque
+  to terminate for any reason while calling it 'for cause' and paying zero severance"
 - State whether there is a cure period and its exact duration
-- State exact severance or lack thereof
- 
-For INDEMNITY clauses:
-- Flag explicitly if the weaker party indemnifies the stronger party even for
-  claims arising from the stronger party's own actions, guidelines, or products
-- State "this means if a customer is harmed by [company's product/instructions],
-  [weaker party] pays the legal costs and damages, not [stronger party]"
- 
-For DISPUTE RESOLUTION clauses:
-- State who appoints the arbitrator — if the stronger party appoints,
-  flag this as a structural bias
-- State whether courts, labour tribunals, or consumer forums are waived
-- For employment agreements: flag that waiving labour tribunal access may be
-  unenforceable under Indian law (Industrial Disputes Act)
-- State the seat of arbitration
+- State exact severance or lack thereof for each termination type
  
 For CONFIDENTIALITY clauses:
-- State whether the obligation is time-limited or perpetual ("at any time thereafter"
-  means perpetual — flag this explicitly)
+- State whether the obligation is time-limited or perpetual
+- If "at any time thereafter" or equivalent: "This obligation has no end date —
+  it is perpetual. The Employee can never discuss Confidential Information,
+  even decades after leaving the Company."
 - State the scope of what is covered
-- Flag if breach entitles the stronger party to unlimited damages
+- Flag if breach entitles unlimited damages with no cap
  
 For MOONLIGHTING / OUTSIDE ACTIVITY clauses:
-- State that "paid or unpaid" means even volunteering or open-source contributions
-  could be a breach
-- State the consequence (immediate termination without notice or severance)
+- State that "paid or unpaid" means even volunteering, open-source contributions,
+  or advising a friend's startup without payment could be a breach
+- State the consequence: immediate termination without notice or severance
+- Flag: "This clause requires prior written consent for any outside activity —
+  the bar for breach is extremely low"
  
 For SOCIAL MEDIA clauses:
-- Flag that posting on LinkedIn that you work at the company without prior approval
-  could technically be a breach
-- State the consequence (treated as misconduct = immediate termination)
+- Flag explicitly: "This clause requires prior written approval from the Company's
+  Communications team before ANY content about the Company — including posting
+  on LinkedIn that you work there, sharing a company achievement, or writing
+  about your role — is published anywhere"
+- State the consequence: treated as misconduct under the termination clause,
+  meaning immediate termination without notice or severance
+ 
+For DISPUTE RESOLUTION clauses:
+- State who appoints the arbitrator — if the stronger party appoints, write:
+  "The arbitrator is appointed by the Company — this is a structural bias
+  against the Employee from the start"
+- State whether courts, labour tribunals, or consumer forums are waived
+- For employment agreements: "Waiving access to labour tribunals may be
+  unenforceable under the Industrial Disputes Act — an employee cannot contract
+  out of statutory rights. This should be flagged to a lawyer before signing."
+- State the seat of arbitration
+ 
+For INDEMNITY clauses:
+- Flag if the weaker party indemnifies the stronger party even for claims arising
+  from the stronger party's own actions, guidelines, or products
  
 WHY IT MATTERS (1-2 sentences):
 State the worst realistic outcome for the weaker party in concrete terms —
-use numbers where relevant. Not abstract risk categories.
+use actual numbers from the document where relevant. Not abstract risk categories.
  
 NEGOTIATION SUGGESTION:
-Must be a specific alternative to propose with numbers.
-Never say "negotiate this clause" — always say what to ask for.
-Examples:
-- "Add a 30-day cure period before termination can be triggered for payment default"
-- "Exclude pre-employment IP and work done on personal devices outside working hours"
+Must be a specific alternative with numbers. Never say "negotiate this clause."
+Always say what exactly to ask for. Examples:
+- "Add a 30-day cure period before termination can be triggered"
+- "Exclude pre-employment IP and all work done on personal devices outside working hours"
 - "Increase non-compete compensation to at least 50% of monthly salary (INR 75,000/month)"
 - "Change arbitrator appointment to a neutral institution e.g. DIAC or ICADR"
 - "Cap confidentiality obligation to 3 years post-termination, not perpetual"
+- "Extend ESOP exercise window from 90 days to 12 months post-termination"
  
 isFavorableToStrongerParty must be boolean true or false — not a string.
  
@@ -448,4 +481,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
- 
