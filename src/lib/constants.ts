@@ -1,4 +1,4 @@
-export const MAX_TEXT_LENGTH = 10000;
+export const MAX_TEXT_LENGTH = 50000;
 export const MAX_PDF_SIZE_MB = 10;
 
 export const RISK_COLORS = {

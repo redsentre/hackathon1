@@ -477,7 +477,7 @@ export async function POST(req: NextRequest) {
       groq.chat.completions.create({
         model: MODEL,
         temperature: 0.1,
-        max_tokens: 16000,
+        max_tokens: 8192,
         messages: [
           { role: 'system', content: SYSTEM_PROMPT_CLAUSES },
           { role: 'user', content: userContent },
