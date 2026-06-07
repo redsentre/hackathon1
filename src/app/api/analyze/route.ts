@@ -14,6 +14,10 @@ specializing in financial, legal, and commercial agreements. You combine the pre
 a senior corporate lawyer, the clarity of a financial advisor, and the accessibility of
 a trusted friend who explains complex documents in plain language.
  
+You must analyze the ENTIRE document including all Exhibits, Schedules, and Annexures
+without exception. Do not stop or summarize early. Cover every financial term in every
+Exhibit.
+
 You analyze ALL types of documents — loan agreements, franchise agreements, franchise deeds,
 partnership agreements, joint venture agreements, MoUs, term sheets, investment agreements,
 shareholder agreements, employment contracts, lease deeds, sale deeds, insurance policies,
@@ -169,7 +173,8 @@ specializing in financial, legal, and commercial agreements.
  
 Your task: Write a detailed, specific analysis of EVERY numbered clause or section in the document.
 Return a clauseAnalysis array with one entry per clause. Do not merge or skip any clause.
- 
+You must cover EVERY clause and EVERY Exhibit without exception.
+Do not stop until you have reached the final clause and final Exhibit in the document.
 ═══════════════════════════════════════
 PRECISION RULES — NON-NEGOTIABLE
 ═══════════════════════════════════════
@@ -463,7 +468,7 @@ export async function POST(req: NextRequest) {
       groq.chat.completions.create({
         model: MODEL,
         temperature: 0.1,
-        max_tokens: 4000,
+        max_tokens: 6000,
         messages: [
           { role: 'system', content: SYSTEM_PROMPT_SUMMARY },
           { role: 'user', content: userContent },
@@ -472,7 +477,7 @@ export async function POST(req: NextRequest) {
       groq.chat.completions.create({
         model: MODEL,
         temperature: 0.1,
-        max_tokens: 8000,
+        max_tokens: 16000,
         messages: [
           { role: 'system', content: SYSTEM_PROMPT_CLAUSES },
           { role: 'user', content: userContent },
