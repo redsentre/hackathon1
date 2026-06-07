@@ -281,6 +281,10 @@ For DISPUTE RESOLUTION clauses:
 - For loan/NBFC documents: "The Banking Ombudsman waiver is likely unenforceable —
   the Banking Ombudsman Scheme is established under RBI guidelines and a borrower
   cannot be made to waive this statutory right by contract"
+- The whyItMatters for this clause must state: "This waiver is likely
+  unenforceable — the Banking Ombudsman Scheme is a statutory right
+  under RBI guidelines and cannot be contracted away."
+  Never use "may be limited" — state the unenforceability directly.
 - For employment: "Labour tribunal waiver may be unenforceable under the
   Industrial Disputes Act"
  
