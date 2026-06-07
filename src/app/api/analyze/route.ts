@@ -24,50 +24,81 @@ in the world.
 Your task: Analyze the document and return ONLY the summary, profile, financial snapshot, and overall assessment.
 Do NOT include clauseAnalysis.
  
-PRECISION RULES — NON-NEGOTIABLE:
-- Always state exact rupee/currency amounts, not approximations
-- Always state exact percentages, not "a percentage"
-- Always state exact timeframes (days, months, years), not "a period"
-- Always state exact distances, penalties, multipliers as written in the document
-- financialSnapshot must capture EVERY financial obligation — upfront fees, recurring fees, setup costs, penalties, renewal fees
-- hiddenOrAdditionalCosts must list ALL costs beyond the headline fee including setup, fit-out, staffing, equipment
-- topThreeRisks must be specific — name the exact clause mechanism with numbers, not a generic category
+═══════════════════════════════════════
+PRECISION RULES — NON-NEGOTIABLE
+═══════════════════════════════════════
+ 
+NUMBERS: Always state exact rupee/currency amounts, percentages, timeframes, distances,
+multipliers, and penalties exactly as written. Never approximate.
+ 
+FINANCIAL SNAPSHOT:
+- Capture EVERY financial obligation — upfront fees, recurring fees, setup costs,
+  penalties, renewal fees, hidden costs
+- For employment contracts: separate fixed vs variable pay and state the guaranteed
+  monthly take-home amount explicitly
+- For franchise/commercial agreements: state total day-one exposure (all costs needed
+  before operations begin), not just the headline fee
+- hiddenOrAdditionalCosts must list every cost not in the headline number
+ 
+TOP THREE RISKS — each must contain:
+- The exact clause number
+- The exact mechanism (what triggers it)
+- The exact numbers or timeframes involved
+- The worst realistic outcome for the weaker party in one concrete sentence
+- Example: "Clause 7 — Franchisor can terminate immediately with no notice or cure
+  period if payment is even 3 days late; the Franchisee loses their entire INR 40-55L
+  investment with no recourse"
+ 
+CRITICAL FLAGS — for every document, always check and flag if present:
+- Any clause where "cause" or "performance" is defined solely by the stronger party
+  (blank cheque for termination without severance)
+- Any clause covering work done outside working hours or without company resources
+  (means personal side projects belong to the company)
+- Any IP clause where innovations made BY the weaker party vest in the stronger party
+- Any probation period that can be extended unilaterally — state the maximum possible
+  duration, not just the initial period
+- Any non-compete where the compensation paid is less than 25% of the employee's
+  annual salary — flag this as inadequate compensation
+- Any arbitration clause where the arbitrator is appointed by the stronger party
+- Any clause waiving access to courts, labour tribunals, or consumer forums
+- Any termination clause with no cure period or less than 7 days cure period
+- Any indemnity clause where the weaker party indemnifies the stronger party even
+  for the stronger party's own actions, guidelines, or products
  
 Always respond with valid JSON matching this EXACT structure.
 Do not include any text outside the JSON object.
  
 {
   "documentProfile": {
-    "documentType": "Precise document type e.g. Franchise Agreement",
+    "documentType": "Precise document type e.g. Franchise Agreement, Employment Agreement",
     "parties": [
       {
         "name": "Party name as in document",
-        "role": "Their role e.g. Franchisor, Franchisee",
+        "role": "Their role e.g. Franchisor, Franchisee, Employer, Employee",
         "powerPosition": "stronger | weaker | equal"
       }
     ],
     "coreTransaction": "One precise sentence: what is fundamentally being exchanged",
-    "termDuration": "Exact duration e.g. 5-year initial term renewable for 5 more years at Franchisor discretion",
+    "termDuration": "Exact duration including any extension or renewal rights",
     "governingLaw": "Exact jurisdiction and governing law",
     "effectiveDate": "Date or To be determined"
   },
-  "executiveSummary": "4-5 sentences for a busy professional. State the document type, exact key financial terms with numbers, the top 2-3 specific risks with clause references, and which party holds more power. No jargon. Be specific with numbers.",
+  "executiveSummary": "4-5 sentences for a busy professional. State: (1) document type and parties, (2) exact key financial terms with numbers, (3) the top 2-3 specific risks with clause numbers and exact mechanisms, (4) which party holds more power and why. No jargon. No vague language. Be specific with every number.",
   "financialSnapshot": {
-    "totalCommitmentSummary": "Total financial exposure over full term with exact numbers — include ALL fees, setup costs, royalties, levies, renewal fees. Give a total range.",
+    "totalCommitmentSummary": "Total financial exposure with exact numbers — for employment: state guaranteed annual CTC vs total CTC and guaranteed monthly take-home; for franchise: state total day-one exposure range before operations begin",
     "immediatePaymentOnSigning": "Exact amount due immediately on signing or null",
     "keyPaymentMilestones": [
       {
-        "period": "e.g. On signing / Monthly / On renewal",
+        "period": "e.g. On signing / Monthly / On renewal / During probation",
         "amount": "Exact amount",
         "description": "What this payment covers",
         "dueDate": "Exact due date or trigger",
-        "consequences": "Exact consequence of non-payment e.g. immediate termination within 3 days"
+        "consequences": "Exact consequence of non-payment or non-performance"
       }
     ],
-    "revenueShareStructure": "Exact revenue share percentages and how they are calculated and when due",
+    "revenueShareStructure": "Exact revenue share percentages and calculation method, or null if not applicable",
     "hiddenOrAdditionalCosts": [
-      "Fit-out, equipment, staffing and operations costs: exact range if stated",
-      "Any other cost not included in the headline fee — GST, audit costs, penalties"
+      "Every cost not in the headline number — state exact amounts or ranges where available"
     ],
     "taxImplications": "GST and tax obligations — who bears them, whether stated or implied"
   },
@@ -76,42 +107,42 @@ Do not include any text outside the JSON object.
       "flag": "Short title of the critical issue",
       "severity": "high | critical",
       "location": "Exact clause number",
-      "explanation": "Specific plain English explanation with exact numbers/timeframes — why this is dangerous",
+      "explanation": "Specific plain English explanation with exact numbers and worst-case outcome for the weaker party",
       "questionsToRaise": "Specific question to raise before signing"
     }
   ],
   "sectionSummaries": {
-    "parties": "Who the parties are and the power dynamic",
-    "financialTerms": "Complete summary of all money with exact figures",
-    "intellectualProperty": "Who owns what IP — including whether innovations and improvements made BY the weaker party vest in the stronger party on termination",
-    "obligations": "Key ongoing obligations of each party with specifics",
-    "termination": "Every exact trigger for termination with specific numbers and timeframes",
-    "disputeResolution": "Exactly how disputes are resolved, who appoints arbitrators, seat of arbitration, whether courts are waived",
-    "exitAndTransfer": "Exact post-termination obligations including non-compete scope, distance, and duration"
+    "parties": "Who the parties are, their roles, and the power dynamic",
+    "financialTerms": "Complete summary of all money with exact figures — guaranteed vs discretionary",
+    "intellectualProperty": "Who owns what IP — explicitly state if innovations or work done OUTSIDE working hours or WITHOUT company resources vest in the stronger party",
+    "obligations": "Key ongoing obligations of each party with specifics — include moonlighting, social media, approval requirements",
+    "termination": "Every exact trigger for termination — list each one with the exact threshold, timeframe, and whether cause is defined subjectively",
+    "disputeResolution": "Exactly how disputes are resolved, who appoints arbitrators, seat of arbitration, whether courts or labour tribunals are waived",
+    "exitAndTransfer": "Exact post-termination obligations — non-compete scope, distance or industry, duration, compensation paid for non-compete if any"
   },
   "negotiationPriorityList": [
     {
       "priority": 1,
       "clause": "Exact clause reference",
-      "issue": "Specific issue to negotiate",
-      "suggestedPosition": "Specific ask with alternative terms"
+      "issue": "Specific issue — include the exact number or mechanism that is problematic",
+      "suggestedPosition": "Specific alternative terms to propose with numbers e.g. reduce from 3x to 1x, add 30-day cure period, cap non-compete at 6 months"
     }
   ],
   "regulatoryContext": {
-    "applicableLaws": ["Specific laws referenced or applicable"],
+    "applicableLaws": ["Specific laws referenced or applicable — for employment include Industrial Disputes Act, for franchise include Consumer Protection Act"],
     "complianceRequirements": ["Specific compliance obligations"],
-    "potentiallyProblematicClauses": ["Clauses that may conflict with applicable law — e.g. waiver of consumer forum access"]
+    "potentiallyProblematicClauses": ["Clauses that may conflict with applicable law — e.g. waiver of labour tribunal access may be unenforceable under Indian law"]
   },
   "overallAssessment": {
     "fairnessScore": 50,
     "fairnessLabel": "one of: Heavily One-Sided, Significantly Skewed, Moderate Imbalance, Reasonably Balanced, Well-Balanced",
-    "powerBalance": "Specific assessment of which party has more protection and exactly why",
+    "powerBalance": "Specific assessment of which party has more protection, exactly which clauses create the imbalance, and what leverage the weaker party has",
     "recommendation": "one of: Proceed with Caution | Seek Legal Advice Before Signing | Negotiate Key Clauses | Acceptable with Minor Modifications | Do Not Sign Without Major Changes",
-    "recommendationReason": "2-3 specific sentences referencing actual clauses and numbers",
+    "recommendationReason": "2-3 specific sentences referencing actual clause numbers and exact mechanisms",
     "topThreeRisks": [
-      "Risk 1: specific clause number, exact mechanism, exact numbers e.g. Clause 7 — Franchisor can terminate immediately if payment is 3 days late, with no cure period",
-      "Risk 2: specific clause number, exact mechanism, exact numbers",
-      "Risk 3: specific clause number, exact mechanism, exact numbers"
+      "Clause X — [exact mechanism] — [exact numbers/thresholds] — worst outcome: [concrete consequence for weaker party]",
+      "Clause X — [exact mechanism] — [exact numbers/thresholds] — worst outcome: [concrete consequence for weaker party]",
+      "Clause X — [exact mechanism] — [exact numbers/thresholds] — worst outcome: [concrete consequence for weaker party]"
     ]
   }
 }
@@ -127,20 +158,98 @@ specializing in financial, legal, and commercial agreements.
 Your task: Write a detailed, specific analysis of EVERY numbered clause or section in the document.
 Return a clauseAnalysis array with one entry per clause. Do not merge or skip any clause.
  
-PRECISION RULES — NON-NEGOTIABLE:
-- whatItSays must be 3-5 sentences containing ALL specific numbers, amounts, percentages, timeframes, distances, multipliers, and triggers from that clause
-- Do NOT generalize: write "3x the discrepancy amount plus all audit costs" not "a penalty"
-- Do NOT generalize: write "termination within 3 days of missed payment, no cure period" not "termination for non-payment"  
-- Do NOT generalize: write "Franchisor can open outlets within 500 metres including under different brand names or delivery-only formats" not "nearby outlets"
-- Do NOT generalize: write "3 customer complaints in any 30-day period as determined solely by the Franchisor" not "customer complaints"
-- Do NOT generalize: write "5km non-compete radius for 3 years post-termination" not "non-compete clause"
-- Do NOT generalize: write "supplier prices can be revised by Franchisor at any time without notice" not "supplier price controls"
-- Do NOT generalize: write "Franchisee indemnifies Franchisor even for claims arising from Franchisor's own guidelines, products, or instructions" not "indemnity obligations"
-- Do NOT generalize: write "all IP including innovations and improvements developed BY the Franchisee during the term vest irrevocably in the Franchisor" not "IP vests in Franchisor"
-- Do NOT generalize: write "renewal fee of INR 5,00,000 plus execution of a new agreement on terms current at that time which may differ materially" not "renewal requires payment"
-- whyItMatters must be 1-2 sentences stating the specific commercial or legal risk with numbers where relevant
-- negotiationSuggestion must be a specific ask e.g. "Reduce penalty from 3x to 1x discrepancy; add right to dispute audit findings" not just "negotiate the clause"
-- isFavorableToStrongerParty must be boolean true or false
+═══════════════════════════════════════
+PRECISION RULES — NON-NEGOTIABLE
+═══════════════════════════════════════
+ 
+WHAT IT SAYS (3-5 sentences required):
+Must contain ALL specific numbers, amounts, percentages, timeframes, distances,
+multipliers, and triggers from that clause. State consequences clearly.
+Never generalize — use the exact language and numbers from the document.
+ 
+SPECIFIC PATTERNS TO ALWAYS CATCH:
+ 
+For COMPENSATION clauses:
+- State fixed vs variable split explicitly with exact amounts
+- Calculate the guaranteed monthly take-home (fixed component ÷ 12)
+- State who determines variable pay and on what basis
+- Flag if the company can restructure CTC — state the floor
+ 
+For PROBATION clauses:
+- State the initial period AND the maximum possible extension period
+- State the notice period during probation with exact hours/days
+- State the notice period after confirmation
+- Flag: during probation the employee has almost no job security
+ 
+For IP / INTELLECTUAL PROPERTY clauses:
+- If the clause covers work done OUTSIDE working hours: explicitly state this —
+  "this clause means personal side projects, apps, or ideas developed on your
+  own time and on your own devices during the employment period belong to the company"
+- If innovations or improvements made BY the weaker party vest in the stronger party:
+  state this explicitly with the irrevocable assignment language
+- Flag the moral rights waiver if present
+ 
+For NON-COMPETE clauses:
+- State the exact duration, geographic or industry scope
+- State the exact monthly compensation paid for the non-compete
+- Calculate total compensation paid vs annual salary as a percentage
+- Flag if compensation is less than 25% of annual salary as inadequate
+- Example: "INR 10,000/month for 12 months = INR 1,20,000 total, which is 5% of
+  the INR 24,00,000 annual CTC — this is grossly inadequate compensation for a
+  12-month career restriction"
+ 
+For TERMINATION clauses:
+- List every single trigger with its exact threshold
+- Flag if "cause" or "non-performance" is defined solely by the stronger party
+  — this is effectively termination without cause while avoiding severance
+- State whether there is a cure period and its exact duration
+- State exact severance or lack thereof
+ 
+For INDEMNITY clauses:
+- Flag explicitly if the weaker party indemnifies the stronger party even for
+  claims arising from the stronger party's own actions, guidelines, or products
+- State "this means if a customer is harmed by [company's product/instructions],
+  [weaker party] pays the legal costs and damages, not [stronger party]"
+ 
+For DISPUTE RESOLUTION clauses:
+- State who appoints the arbitrator — if the stronger party appoints,
+  flag this as a structural bias
+- State whether courts, labour tribunals, or consumer forums are waived
+- For employment agreements: flag that waiving labour tribunal access may be
+  unenforceable under Indian law (Industrial Disputes Act)
+- State the seat of arbitration
+ 
+For CONFIDENTIALITY clauses:
+- State whether the obligation is time-limited or perpetual ("at any time thereafter"
+  means perpetual — flag this explicitly)
+- State the scope of what is covered
+- Flag if breach entitles the stronger party to unlimited damages
+ 
+For MOONLIGHTING / OUTSIDE ACTIVITY clauses:
+- State that "paid or unpaid" means even volunteering or open-source contributions
+  could be a breach
+- State the consequence (immediate termination without notice or severance)
+ 
+For SOCIAL MEDIA clauses:
+- Flag that posting on LinkedIn that you work at the company without prior approval
+  could technically be a breach
+- State the consequence (treated as misconduct = immediate termination)
+ 
+WHY IT MATTERS (1-2 sentences):
+State the worst realistic outcome for the weaker party in concrete terms —
+use numbers where relevant. Not abstract risk categories.
+ 
+NEGOTIATION SUGGESTION:
+Must be a specific alternative to propose with numbers.
+Never say "negotiate this clause" — always say what to ask for.
+Examples:
+- "Add a 30-day cure period before termination can be triggered for payment default"
+- "Exclude pre-employment IP and work done on personal devices outside working hours"
+- "Increase non-compete compensation to at least 50% of monthly salary (INR 75,000/month)"
+- "Change arbitrator appointment to a neutral institution e.g. DIAC or ICADR"
+- "Cap confidentiality obligation to 3 years post-termination, not perpetual"
+ 
+isFavorableToStrongerParty must be boolean true or false — not a string.
  
 Always respond with valid JSON matching this EXACT structure.
 Do not include any text outside the JSON object.
@@ -151,13 +260,13 @@ Do not include any text outside the JSON object.
       "clauseId": "Clause 1",
       "clauseTitle": "Short name max 5 words",
       "category": "one of: Financial, Legal Rights, Intellectual Property, Termination, Dispute Resolution, Obligations, Exclusivity, Ownership & Transfer, Governance, Confidentiality, Force Majeure, Indemnity, General",
-      "whatItSays": "3-5 sentences. Plain English with ALL specific numbers, amounts, percentages, timeframes, distances, multipliers, and triggers from this clause. State consequences clearly.",
-      "whyItMatters": "1-2 sentences. The specific commercial or legal risk with numbers where relevant.",
+      "whatItSays": "3-5 sentences. Plain English with ALL specific numbers, amounts, percentages, timeframes, distances, multipliers, and triggers. State consequences. Never generalize.",
+      "whyItMatters": "1-2 sentences. Worst realistic outcome for the weaker party in concrete terms with numbers.",
       "riskLevel": "low | medium | high | critical",
       "riskBearing": "franchisee | franchisor | both | borrower | lender | employee | employer",
       "isFavorableToStrongerParty": true,
       "keyQuestionsToAsk": ["One specific question referencing the exact clause mechanism and numbers"],
-      "negotiationSuggestion": "Specific alternative terms to propose — not generic advice"
+      "negotiationSuggestion": "Specific alternative terms with numbers — not generic advice"
     }
   ],
   "termCount": 11,
@@ -339,3 +448,4 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+ 

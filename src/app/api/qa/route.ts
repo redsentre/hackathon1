@@ -137,40 +137,61 @@ CRITICAL RULES
 
 ${language === 'hi' ? 'Respond in Hindi.' : 'Respond in English.'}`;
 
-    const userMessage = `Here is the document:
+    const userMessage = `Here is the document:\n\n${documentText}\n\nUser's question: ${question}`;
 
-${documentText}
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 55000);
 
-User's question: ${question}`;
+    try {
+      const result = await groq.chat.completions.create({
+        model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+        temperature: 0.3,
+        max_tokens: 2000,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userMessage },
+        ],
+      });
 
-    const result = await groq.chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
-      temperature: 0.3,
-      max_tokens: 3000,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userMessage },
-      ],
-    });
+      clearTimeout(timeoutId);
 
-    const answer = result.choices[0]?.message?.content;
+      const answer = result.choices[0]?.message?.content;
 
-    if (!answer) {
+      if (!answer) {
+        return NextResponse.json<QAResponse>(
+          { success: false, error: 'Failed to generate answer' },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json<QAResponse>({
+        success: true,
+        answer,
+      });
+    } catch (groqError: any) {
+      clearTimeout(timeoutId);
+      // Handle rate limit specifically
+      if (groqError?.status === 429) {
+        return NextResponse.json<QAResponse>(
+          { success: false, error: 'ArthSaathi is busy right now. Please try again in a moment.' },
+          { status: 429 }
+        );
+      }
+      throw groqError;
+    }
+  } catch (error: any) {
+    console.error('QA error:', error);
+    // Timeout
+    if (error?.name === 'AbortError' || error?.message?.includes('abort')) {
       return NextResponse.json<QAResponse>(
-        { success: false, error: 'Failed to generate answer' },
-        { status: 500 }
+        { success: false, error: 'Request timed out. Please try again.' },
+        { status: 504 }
       );
     }
-
-    return NextResponse.json<QAResponse>({
-      success: true,
-      answer,
-    });
-  } catch (error) {
-    console.error('QA error:', error);
     return NextResponse.json<QAResponse>(
       { success: false, error: 'An error occurred while processing your question' },
       { status: 500 }
     );
   }
 }
+
