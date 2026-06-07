@@ -15,7 +15,7 @@ export async function extractTextFromPDF(buffer: Buffer): Promise<{ text: string
     }
 
     return {
-      text: text.slice(0, 4000),
+      text: text.slice(0, 50000),
       pageCount: totalPages
     };
 
