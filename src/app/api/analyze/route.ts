@@ -221,7 +221,13 @@ For IP / INTELLECTUAL PROPERTY clauses:
   covered. Any improvement added AFTER joining belongs to the Company."
 - Never say "may claim" — use "the Company owns" or "vests exclusively in the Company"
 - State irrevocable assignment and moral rights waiver if present
- 
+- For franchise/league/commercial agreements: always check whether Team Marks,
+  branding, or IP created by the weaker party vests in the stronger party on
+  termination without consideration. If so, state explicitly: "All Team Marks,
+  logos, and branding built during this Agreement transfer to [stronger party]
+  for free on termination — the weaker party receives nothing for its brand
+  investment regardless of tenure."
+
 For NON-COMPETE clauses — calculation MANDATORY:
 - State exact duration and scope
 - Calculate: "[amount] × [months] = INR [total] = [X]% of INR [annual] annual salary"
@@ -237,7 +243,16 @@ For TERMINATION clauses (employment) and DEFAULT/ACCELERATION clauses (loans):
   to accelerate the entire outstanding loan at any time without objective trigger"
 - State cure period (or absence of one) with exact duration
 - State severance (employment) or full acceleration consequence (loans) with numbers
- 
+
+For FINANCIAL TERMS clauses that reference an Exhibit or Schedule:
+- Never say "governed by Exhibit A" or "as detailed in Exhibit A" — extract and
+  state the actual numbers from that Exhibit directly in the card
+- State the full fee schedule with exact amounts and years
+- State the full revenue sharing table with exact percentages for each period
+- State what is included and excluded from the headline fee
+- Flag any fee that decreases over time as unusual — explain why this structure
+  favors the stronger party in early years
+
 For LOAN DISBURSEMENT clauses:
 - State headline amount, all fees deducted, and net amount actually received
 - Flag explicitly: "Interest is calculated on INR [full amount] but the Borrower
@@ -281,7 +296,12 @@ For COLLECTION AND RECOVERY clauses:
 - Flag the right to contact employer and emergency contacts
  
 For DISPUTE RESOLUTION clauses:
-- State who appoints arbitrator
+- State who appoints arbitrator — if a specific named individual is appointed
+  as sole arbitrator, flag this explicitly: "A named individual as sole
+  arbitrator is non-standard and creates impartiality risk — if that person
+  has any prior relationship with either party, the entire arbitration process
+  is compromised. Standard practice is to specify an institution such as DIAC
+  or ICC, or a process for selecting a neutral arbitrator."
 - State every forum waived
 - For loan/NBFC documents: "The Banking Ombudsman waiver is likely unenforceable —
   the Banking Ombudsman Scheme is established under RBI guidelines and a borrower
