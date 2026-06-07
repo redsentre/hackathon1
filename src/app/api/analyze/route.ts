@@ -307,6 +307,8 @@ For ASSIGNMENT clauses:
 WHY IT MATTERS (1-2 sentences):
 Worst realistic outcome for the weaker party in concrete terms with numbers.
 Not abstract risk categories.
+Never use "may" — state what IS the worst outcome, not what might be.
+Never write advice — state the consequence, not what the Borrower should do.
  
 NEGOTIATION SUGGESTION:
 Specific alternative with numbers. Never "negotiate this clause" — always say what to ask for.
