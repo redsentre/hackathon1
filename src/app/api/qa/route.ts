@@ -235,7 +235,7 @@ ${language === 'hi' ? 'Respond in Hindi.' : 'Respond in English.'}`;
  
     try {
       const result = await groq.chat.completions.create({
-        model: 'qwen/qwen3.6-27b',
+        model: 'openai/gpt-oss-20b',
         temperature: 0.2,
         max_tokens: 2000,
         messages: [
@@ -267,6 +267,12 @@ ${language === 'hi' ? 'Respond in Hindi.' : 'Respond in English.'}`;
           { status: 429 }
         );
       }
+      if (groqError?.status === 413) {
+  return NextResponse.json<QAResponse>(
+    { success: false, error: 'Document is too large to process. Please try a shorter document.' },
+    { status: 413 }
+  );
+}
       throw groqError;
     }
   } catch (error: any) {

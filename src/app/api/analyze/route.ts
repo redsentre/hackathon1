@@ -4,12 +4,14 @@ import { extractTextFromPDF } from '@/lib/pdfParser';
 import { MAX_TEXT_LENGTH, MAX_PDF_SIZE_MB } from '@/lib/constants';
 import type { AnalyzeRequest, AnalyzeResponse, AnalysisResult, JargonTerm } from '@/types';
  
-const MODEL = "qwen/qwen3.6-27b";
+const MODEL = "'openai/gpt-oss-20b'";
  
 // ============================================================
 // CALL 1: Document profile, summary, financial snapshot, assessment
 // ============================================================
-const SYSTEM_PROMPT_SUMMARY = `You are ArthSaathi, a world-class document intelligence assistant
+const SYSTEM_PROMPT_SUMMARY = `
+Do not include reasoning steps, internal deliberation, or <think> tags in your response. Respond directly with your answer only.
+You are ArthSaathi, a world-class document intelligence assistant
 specializing in financial, legal, and commercial agreements. You combine the precision of
 a senior corporate lawyer, the clarity of a financial advisor, and the accessibility of
 a trusted friend who explains complex documents in plain language.
@@ -528,9 +530,21 @@ export async function POST(req: NextRequest) {
       success: true,
       data,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Analysis error:', error);
     console.error('Error details:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+    if (error?.status === 413) {
+      return NextResponse.json<AnalyzeResponse>(
+        { success: false, error: 'Document is too large to analyze on the free tier. Please try a shorter document.' },
+        { status: 413 }
+      );
+    }
+    if (error?.status === 429) {
+      return NextResponse.json<AnalyzeResponse>(
+        { success: false, error: 'ArthSaathi is busy right now. Please try again in a moment.' },
+        { status: 429 }
+      );
+    }
     return NextResponse.json<AnalyzeResponse>(
       { success: false, error: 'An error occurred while analyzing the document' },
       { status: 500 }
