@@ -465,9 +465,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const rawSummary = JSON.parse(summaryContent.replace(/```json\n?|\n?```/g, '').trim());
-    const rawClauses = JSON.parse(clausesContent.replace(/```json\n?|\n?```/g, '').trim());
+    const cleanSummary = summaryContent.replace(/```json\n?|\n?```/g, '').trim();
+const cleanClauses = clausesContent.replace(/```json\n?|\n?```/g, '').trim();
 
+let rawSummary: any;
+let rawClauses: any;
+
+try {
+  rawSummary = JSON.parse(cleanSummary);
+} catch {
+  const truncated = cleanSummary.substring(0, cleanSummary.lastIndexOf('}') + 1);
+  rawSummary = JSON.parse(truncated);
+}
+
+try {
+  rawClauses = JSON.parse(cleanClauses);
+} catch {
+  const truncated = cleanClauses.substring(0, cleanClauses.lastIndexOf('}') + 1);
+  rawClauses = JSON.parse(truncated);
+}
     const data = mapToAnalysisResult(rawSummary, rawClauses);
     console.log('Final terms count:', data.termCount);
 
