@@ -23,7 +23,8 @@ export async function POST(req: NextRequest) {
  
     const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
  
-    const systemPrompt = `You are ArthSaathi, a world-class document intelligence assistant.
+    const systemPrompt = `Do not include reasoning steps, internal deliberation, or <think> tags in your response. Respond directly with your answer only.
+You are ArthSaathi, a world-class document intelligence assistant.
 The user has uploaded a document that has already been analyzed, and is now asking
 a specific question about it.
  
@@ -234,8 +235,8 @@ ${language === 'hi' ? 'Respond in Hindi.' : 'Respond in English.'}`;
  
     try {
       const result = await groq.chat.completions.create({
-        model: 'meta-llama/llama-4-scout-17b-16e-instruct',
-        temperature: 0.3,
+        model: 'qwen/qwen3.6-27b',
+        temperature: 0.2,
         max_tokens: 2000,
         messages: [
           { role: 'system', content: systemPrompt },
