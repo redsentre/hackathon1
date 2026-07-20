@@ -1,21 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Groq from 'groq-sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { extractTextFromPDF } from '@/lib/pdfParser';
 import { MAX_TEXT_LENGTH, MAX_PDF_SIZE_MB } from '@/lib/constants';
 import type { AnalyzeRequest, AnalyzeResponse, AnalysisResult, JargonTerm } from '@/types';
- 
-const MODEL = 'openai/gpt-oss-20b';
- 
+
+const MODEL = 'gemini-2.0-flash';
+
 // ============================================================
 // CALL 1: Document profile, summary, financial snapshot, assessment
 // ============================================================
-const SYSTEM_PROMPT_SUMMARY = `
-Do not include reasoning steps, internal deliberation, or <think> tags in your response. Respond directly with your answer only.
+const SYSTEM_PROMPT_SUMMARY = `Do not include reasoning steps, internal deliberation, or <think> tags in your response. Respond directly with your answer only.
 You are ArthSaathi, a world-class document intelligence assistant
 specializing in financial, legal, and commercial agreements. You combine the precision of
 a senior corporate lawyer, the clarity of a financial advisor, and the accessibility of
 a trusted friend who explains complex documents in plain language.
- 
+
 You must analyze the ENTIRE document including all Exhibits, Schedules, and Annexures
 without exception. Do not stop or summarize early. Cover every financial term in every
 Exhibit.
@@ -26,17 +25,17 @@ shareholder agreements, employment contracts, lease deeds, sale deeds, insurance
 credit card agreements, mutual fund documents, bank account terms, licensing agreements,
 distribution agreements, and any other financial or legal document — from India or anywhere
 in the world.
- 
+
 Your task: Analyze the document and return ONLY the summary, profile, financial snapshot, and overall assessment.
 Do NOT include clauseAnalysis.
- 
+
 ═══════════════════════════════════════
 PRECISION RULES — NON-NEGOTIABLE
 ═══════════════════════════════════════
- 
+
 NUMBERS: Always state exact rupee/currency amounts, percentages, timeframes, distances,
 multipliers, and penalties exactly as written. Never approximate.
- 
+
 FINANCIAL SNAPSHOT:
 - Capture EVERY financial obligation — upfront fees, recurring fees, setup costs,
   penalties, renewal fees, hidden costs
@@ -48,13 +47,13 @@ FINANCIAL SNAPSHOT:
   (b) the principal on which interest is calculated, (c) total repayment amount,
   and (d) real cost of borrowing = total repayment minus net amount received
 - hiddenOrAdditionalCosts must list every cost not in the headline number
- 
+
 TOP THREE RISKS — each must contain:
 - The exact clause number
 - The exact mechanism (what triggers it)
 - The exact numbers or timeframes involved
 - The worst realistic outcome for the weaker party in one concrete sentence
- 
+
 CRITICAL FLAGS — for every document, always check and flag if present:
 - Any clause where "cause", "performance", or "material adverse change" is defined
   solely by the stronger party — this is a blank cheque for acceleration,
@@ -82,10 +81,10 @@ CRITICAL FLAGS — for every document, always check and flag if present:
   recourse is to prepay with a penalty
 - [LOAN DOCUMENTS] Any cross-default clause — flag that default on any product
   with any group company triggers default and acceleration on this loan
- 
+
 Always respond with valid JSON matching this EXACT structure.
 Do not include any text outside the JSON object.
- 
+
 {
   "documentProfile": {
     "documentType": "Precise document type",
@@ -164,15 +163,16 @@ Do not include any text outside the JSON object.
     ]
   }
 }
- 
+
 Do not include any text outside the JSON object.`;
- 
+
 // ============================================================
 // CALL 2: Full clause-by-clause analysis — detailed, specific, complete
 // ============================================================
-const SYSTEM_PROMPT_CLAUSES = `You are ArthSaathi, a world-class document intelligence assistant
+const SYSTEM_PROMPT_CLAUSES = `Do not include reasoning steps, internal deliberation, or <think> tags in your response. Respond directly with your answer only.
+You are ArthSaathi, a world-class document intelligence assistant
 specializing in financial, legal, and commercial agreements.
- 
+
 Your task: Write a detailed, specific analysis of EVERY numbered clause or section in the document.
 Return a clauseAnalysis array with one entry per clause. Do not merge or skip any clause.
 You must cover EVERY clause and EVERY Exhibit without exception.
@@ -180,41 +180,41 @@ Do not stop until you have reached the final clause and final Exhibit in the doc
 ═══════════════════════════════════════
 PRECISION RULES — NON-NEGOTIABLE
 ═══════════════════════════════════════
- 
+
 WHAT IT SAYS (3-5 sentences required):
 Must contain ALL specific numbers, amounts, percentages, timeframes, distances,
 multipliers, and triggers from that clause. State consequences clearly.
 Never generalize — use the exact language and numbers from the document.
- 
+
 LANGUAGE PRECISION — NON-NEGOTIABLE:
 Never use "may" or "could" when the clause uses "shall" or states something
 unconditionally. If the clause is unambiguous, state what IT IS.
 "The Company owns" not "the Company may own."
 "The obligation is perpetual" not "the obligation may be perpetual."
 "The entire loan becomes immediately due" not "the loan may become due."
- 
+
 SPECIFIC PATTERNS TO ALWAYS CATCH:
- 
+
 For COMPENSATION clauses:
 - State fixed vs variable split with exact amounts
 - Calculate guaranteed monthly take-home: fixed component ÷ 12 = INR X
 - State who determines variable pay and on what basis
 - Flag CTC restructuring rights and state the guaranteed floor
 - Be explicit: "Your guaranteed monthly take-home is INR X, not INR Y (total CTC ÷ 12)"
- 
+
 For PROBATION clauses:
 - State initial period AND maximum extension period
 - State total maximum probation duration
 - State notice period during probation with exact hours/days
 - Flag: "The Employee has almost no job security for up to [maximum duration]"
- 
+
 For ESOP / STOCK OPTION clauses — ALL FOUR points MANDATORY:
 - (1) Vesting schedule with exact cliff and post-cliff monthly vesting
 - (2) Forfeiture on termination before cliff: "All [X] options are forfeited"
 - (3) Post-termination exercise window: "Vested options MUST be exercised within
   [X] days — after that they lapse permanently and cannot be recovered"
 - (4) Company's right to modify ESOP scheme
- 
+
 For IP / INTELLECTUAL PROPERTY clauses:
 - If covers work outside working hours: "This clause covers work done outside
   working hours and on personal devices — any app, tool, or side project
@@ -235,116 +235,57 @@ For NON-COMPETE clauses — calculation MANDATORY:
 - Calculate: "[amount] × [months] = INR [total] = [X]% of INR [annual] annual salary"
 - Flag if under 25% of annual salary as grossly inadequate
 - Note enforceability under Section 27 of the Indian Contract Act
- 
+
 For TERMINATION clauses (employment) and DEFAULT/ACCELERATION clauses (loans):
 - List every trigger with exact threshold
-- Flag any trigger defined solely by the stronger party with no objective threshold:
-  Employment: "'non-performance as determined by the Company' is a blank cheque
-  to terminate without severance"
-  Loans: "'material adverse change as determined by the Lender' allows the Lender
-  to accelerate the entire outstanding loan at any time without objective trigger"
+- Flag any trigger defined solely by the stronger party with no objective threshold
 - State cure period (or absence of one) with exact duration
 - State severance (employment) or full acceleration consequence (loans) with numbers
 
 For FINANCIAL TERMS clauses that reference an Exhibit or Schedule:
-- Never say "governed by Exhibit A" or "as detailed in Exhibit A" — extract and
-  state the actual numbers from that Exhibit directly in the card
+- Never say "governed by Exhibit A" — extract and state the actual numbers directly
 - State the full fee schedule with exact amounts and years
 - State the full revenue sharing table with exact percentages for each period
-- State what is included and excluded from the headline fee
-- Flag any fee that decreases over time as unusual — explain why this structure
-  favors the stronger party in early years
 
 For LOAN DISBURSEMENT clauses:
 - State headline amount, all fees deducted, and net amount actually received
 - Flag explicitly: "Interest is calculated on INR [full amount] but the Borrower
   only receives INR [net amount] — the Borrower pays interest on INR [gap]
   they never received"
-- State total repayment and real cost: "INR [total repayment] on INR [net received]
-  = INR [difference] total cost over the loan tenure"
- 
+
 For INTEREST RATE clauses:
 - State contracted rate, EAR, and penal rate — all three if present
 - State penal rate in both monthly and annual terms
-- Bottom line must name all three rates with numbers explicitly
- 
+
 For INSURANCE clauses in loan documents:
-- First check whether two clauses contradict each other on the same product.
-  If they do, the card must open with: "Clause [X] and Clause [Y] directly
-  contradict each other — Clause [Y] overrides Clause [X]." Do not treat
-  them as two separate cards.
-- If insurance appears in two clauses with contradictory treatment, flag both
-  clause numbers explicitly: "Clause [X] says optional. Clause [Y] has already
-  added INR [amount] to your loan principal by default. You have [Z] days from
-  disbursement to opt out in writing. If you do not, you pay INR [amount] plus
-  interest at [rate]% for [tenure] — approximately INR [total cost] extra."
- 
+- First check whether two clauses contradict each other on the same product
+- Flag both clause numbers explicitly with opt-out window and total cost
+
 For AMENDMENT clauses in loan documents:
-- Flag: "The Lender can raise the interest rate, fees, or charges with only
-  30 days notice. The Borrower's only option is to prepay in full — subject
-  to a [X]% prepayment penalty under Clause [Y]. There is no protection
-  against rate increases for the entire loan tenure."
- 
+- Flag: "The Lender can raise the interest rate with only 30 days notice"
+
 For CROSS-DEFAULT clauses:
-- Flag: "A default on any credit card, loan, or product with [Lender] or any
-  group company triggers default on this loan — the entire outstanding
-  INR [amount] becomes immediately due"
-- Flag the set-off right: "The Lender can debit any of your accounts with
-  them or their group companies without prior notice to recover dues"
- 
-For COLLECTION AND RECOVERY clauses:
-- Calculate collection fee in rupees: "[X]% of INR [outstanding] = INR [amount]"
-- Flag: "The Borrower pays the cost of their own debt collection"
-- Flag the right to contact employer and emergency contacts
- 
+- Flag the full acceleration consequence with exact amounts
+
 For DISPUTE RESOLUTION clauses:
-- State who appoints arbitrator — if a specific named individual is appointed
-  as sole arbitrator, flag this explicitly: "A named individual as sole
-  arbitrator is non-standard and creates impartiality risk — if that person
-  has any prior relationship with either party, the entire arbitration process
-  is compromised. Standard practice is to specify an institution such as DIAC
-  or ICC, or a process for selecting a neutral arbitrator."
-- State every forum waived
-- For loan/NBFC documents: "The Banking Ombudsman waiver is likely unenforceable —
-  the Banking Ombudsman Scheme is established under RBI guidelines and a borrower
-  cannot be made to waive this statutory right by contract"
-- The whyItMatters for this clause must state: "This waiver is likely
-  unenforceable — the Banking Ombudsman Scheme is a statutory right
-  under RBI guidelines and cannot be contracted away."
-  Never use "may be limited" — state the unenforceability directly.
-- For employment: "Labour tribunal waiver may be unenforceable under the
-  Industrial Disputes Act"
- 
+- State who appoints arbitrator
+- For loan/NBFC documents flag Banking Ombudsman waiver as likely unenforceable
+
 For CONFIDENTIALITY clauses:
 - If perpetual: state "This obligation has no end date — it is perpetual"
-- Flag unlimited damages with no cap
- 
-For MOONLIGHTING clauses:
-- State "paid or unpaid" scope covers volunteering and open-source
-- State consequence: immediate termination without notice or severance
- 
-For SOCIAL MEDIA clauses:
-- Flag that posting on LinkedIn that you work there without approval is a breach
-- State consequence: treated as misconduct = immediate termination
- 
-For ASSIGNMENT clauses:
-- Flag loan can be sold to debt collector without Borrower consent
-- State what changes for the Borrower
- 
+
 WHY IT MATTERS (1-2 sentences):
 Worst realistic outcome for the weaker party in concrete terms with numbers.
-Not abstract risk categories.
-Never use "may" — state what IS the worst outcome, not what might be.
-Never write advice — state the consequence, not what the Borrower should do.
- 
+Never use "may" — state what IS the worst outcome.
+
 NEGOTIATION SUGGESTION:
 Specific alternative with numbers. Never "negotiate this clause" — always say what to ask for.
- 
+
 isFavorableToStrongerParty must be boolean true or false — not a string.
- 
+
 Always respond with valid JSON matching this EXACT structure.
 Do not include any text outside the JSON object.
- 
+
 {
   "clauseAnalysis": [
     {
@@ -363,26 +304,26 @@ Do not include any text outside the JSON object.
   "termCount": 11,
   "criticalFlagCount": 3
 }
- 
+
 Do not include any text outside the JSON object.`;
- 
+
 const toRiskLevel = (r: string): 'low' | 'medium' | 'high' => {
   if (r === 'high' || r === 'critical') return 'high';
   if (r === 'medium') return 'medium';
   return 'low';
 };
- 
+
 const deriveOverallRisk = (terms: JargonTerm[]): 'low' | 'medium' | 'high' => {
   if (terms.some((t) => t.riskLevel === 'high')) return 'high';
   if (terms.some((t) => t.riskLevel === 'medium')) return 'medium';
   return 'low';
 };
- 
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mapToAnalysisResult = (summary: any, clauses: any): AnalysisResult => {
   const profile = summary.documentProfile ?? {};
   const assessment = summary.overallAssessment ?? {};
- 
+
   const terms: JargonTerm[] = (clauses.clauseAnalysis ?? []).map(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (c: any): JargonTerm => ({
@@ -397,7 +338,7 @@ const mapToAnalysisResult = (summary: any, clauses: any): AnalysisResult => {
       category: c.category ?? 'General',
     })
   );
- 
+
   return {
     terms,
     summary: summary.executiveSummary ?? '',
@@ -412,35 +353,35 @@ const mapToAnalysisResult = (summary: any, clauses: any): AnalysisResult => {
     trustScoreLabel: assessment.fairnessLabel ?? '',
   };
 };
- 
+
 export async function POST(req: NextRequest) {
   try {
     console.log('Analysis request received');
     const contentType = req.headers.get('content-type');
     console.log('Content-Type:', contentType);
- 
+
     let text: string = '';
     let language: 'en' | 'hi' = 'en';
- 
+
     if (contentType?.includes('multipart/form-data')) {
       const formData = await req.formData();
       const file = formData.get('file') as File;
       language = (formData.get('language') as 'en' | 'hi') || 'en';
- 
+
       if (!file) {
         return NextResponse.json<AnalyzeResponse>(
           { success: false, error: 'No file provided' },
           { status: 400 }
         );
       }
- 
+
       if (file.type !== 'application/pdf') {
         return NextResponse.json<AnalyzeResponse>(
           { success: false, error: 'Only PDF files are supported' },
           { status: 400 }
         );
       }
- 
+
       const maxSizeBytes = MAX_PDF_SIZE_MB * 1024 * 1024;
       if (file.size > maxSizeBytes) {
         return NextResponse.json<AnalyzeResponse>(
@@ -448,17 +389,17 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
       }
- 
+
       const buffer = Buffer.from(await file.arrayBuffer());
       const pdfResult = await extractTextFromPDF(buffer);
- 
+
       if (!pdfResult.text || pdfResult.text.length === 0) {
         return NextResponse.json<AnalyzeResponse>(
           { success: false, error: 'Could not extract text from PDF. The file might be corrupted, password-protected, or image-based (scanned). Please try a different PDF.' },
           { status: 400 }
         );
       }
- 
+
       text = pdfResult.text;
       console.log('PDF parsed successfully, text length:', text.length, 'pages:', pdfResult.pageCount);
     } else {
@@ -466,66 +407,60 @@ export async function POST(req: NextRequest) {
       text = body.text?.trim() || '';
       language = body.language || 'en';
     }
- 
+
     if (!text) {
       return NextResponse.json<AnalyzeResponse>(
         { success: false, error: 'Text cannot be empty' },
         { status: 400 }
       );
     }
- 
+
     if (text.length > MAX_TEXT_LENGTH) {
       return NextResponse.json<AnalyzeResponse>(
         { success: false, error: `Text exceeds ${MAX_TEXT_LENGTH} character limit` },
         { status: 400 }
       );
     }
- 
-    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
+    const model = genAI.getGenerativeModel({ model: MODEL });
+
     const userContent = `Output language: ${language === 'hi' ? 'Hindi' : 'English'}\n\nDocument to analyze:\n${text}`;
- 
-    console.log('Calling Groq API (2 parallel calls) with text length:', text.length);
- 
+
+    console.log('Calling Gemini API (2 parallel calls) with text length:', text.length);
+
     const [summaryResult, clausesResult] = await Promise.all([
-      groq.chat.completions.create({
-        model: MODEL,
-        temperature: 0.1,
-        max_tokens: 6000,
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT_SUMMARY },
-          { role: 'user', content: userContent },
-        ],
+      model.generateContent({
+        contents: [{ role: 'user', parts: [{ text: userContent }] }],
+        systemInstruction: SYSTEM_PROMPT_SUMMARY,
+        generationConfig: { temperature: 0.1, maxOutputTokens: 6000 },
       }),
-      groq.chat.completions.create({
-        model: MODEL,
-        temperature: 0.1,
-        max_tokens: 8192,
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT_CLAUSES },
-          { role: 'user', content: userContent },
-        ],
+      model.generateContent({
+        contents: [{ role: 'user', parts: [{ text: userContent }] }],
+        systemInstruction: SYSTEM_PROMPT_CLAUSES,
+        generationConfig: { temperature: 0.1, maxOutputTokens: 8192 },
       }),
     ]);
- 
-    const summaryContent = summaryResult.choices[0]?.message?.content;
-    const clausesContent = clausesResult.choices[0]?.message?.content;
- 
-    console.log('Summary:', summaryContent?.length, 'chars | finish:', summaryResult.choices[0]?.finish_reason);
-    console.log('Clauses:', clausesContent?.length, 'chars | finish:', clausesResult.choices[0]?.finish_reason);
- 
+
+    const summaryContent = summaryResult.response.text();
+    const clausesContent = clausesResult.response.text();
+
+    console.log('Summary:', summaryContent?.length, 'chars');
+    console.log('Clauses:', clausesContent?.length, 'chars');
+
     if (!summaryContent || !clausesContent) {
       return NextResponse.json<AnalyzeResponse>(
         { success: false, error: 'Failed to analyze document' },
         { status: 500 }
       );
     }
- 
+
     const rawSummary = JSON.parse(summaryContent.replace(/```json\n?|\n?```/g, '').trim());
     const rawClauses = JSON.parse(clausesContent.replace(/```json\n?|\n?```/g, '').trim());
- 
+
     const data = mapToAnalysisResult(rawSummary, rawClauses);
     console.log('Final terms count:', data.termCount);
- 
+
     return NextResponse.json<AnalyzeResponse>({
       success: true,
       data,
@@ -533,18 +468,6 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error('Analysis error:', error);
     console.error('Error details:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
-    if (error?.status === 413) {
-      return NextResponse.json<AnalyzeResponse>(
-        { success: false, error: 'Document is too large to analyze on the free tier. Please try a shorter document.' },
-        { status: 413 }
-      );
-    }
-    if (error?.status === 429) {
-      return NextResponse.json<AnalyzeResponse>(
-        { success: false, error: 'ArthSaathi is busy right now. Please try again in a moment.' },
-        { status: 429 }
-      );
-    }
     return NextResponse.json<AnalyzeResponse>(
       { success: false, error: 'An error occurred while analyzing the document' },
       { status: 500 }
