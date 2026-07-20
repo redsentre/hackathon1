@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import OpenAI from 'openai';
 import { extractTextFromPDF } from '@/lib/pdfParser';
 import { MAX_TEXT_LENGTH, MAX_PDF_SIZE_MB } from '@/lib/constants';
 import type { AnalyzeRequest, AnalyzeResponse, AnalysisResult, JargonTerm } from '@/types';
 
-const MODEL = 'gemini-2.0-flash';
+const MODEL = process.env.NVIDIA_MODEL ?? 'openai/gpt-oss-120b';
 
 // ============================================================
 // CALL 1: Document profile, summary, financial snapshot, assessment
@@ -422,28 +422,38 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
-    const model = genAI.getGenerativeModel({ model: MODEL });
+    const client = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+      baseURL: process.env.NVIDIA_API_BASE_URL,
+    });
 
     const userContent = `Output language: ${language === 'hi' ? 'Hindi' : 'English'}\n\nDocument to analyze:\n${text}`;
 
-    console.log('Calling Gemini API (2 parallel calls) with text length:', text.length);
+    console.log('Calling NVIDIA API (2 parallel calls) with text length:', text.length);
 
     const [summaryResult, clausesResult] = await Promise.all([
-      model.generateContent({
-        contents: [{ role: 'user', parts: [{ text: userContent }] }],
-        systemInstruction: SYSTEM_PROMPT_SUMMARY,
-        generationConfig: { temperature: 0.1, maxOutputTokens: 6000 },
+      client.chat.completions.create({
+        model: MODEL,
+        temperature: 0.1,
+        max_tokens: 6000,
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT_SUMMARY },
+          { role: 'user', content: userContent },
+        ],
       }),
-      model.generateContent({
-        contents: [{ role: 'user', parts: [{ text: userContent }] }],
-        systemInstruction: SYSTEM_PROMPT_CLAUSES,
-        generationConfig: { temperature: 0.1, maxOutputTokens: 8192 },
+      client.chat.completions.create({
+        model: MODEL,
+        temperature: 0.1,
+        max_tokens: 8192,
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT_CLAUSES },
+          { role: 'user', content: userContent },
+        ],
       }),
     ]);
 
-    const summaryContent = summaryResult.response.text();
-    const clausesContent = clausesResult.response.text();
+    const summaryContent = summaryResult.choices[0]?.message?.content;
+    const clausesContent = clausesResult.choices[0]?.message?.content;
 
     console.log('Summary:', summaryContent?.length, 'chars');
     console.log('Clauses:', clausesContent?.length, 'chars');
