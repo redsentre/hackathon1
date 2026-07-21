@@ -177,6 +177,7 @@ Your task: Write a detailed, specific analysis of EVERY numbered clause or secti
 Return a clauseAnalysis array with one entry per clause. Do not merge or skip any clause.
 You must cover EVERY clause and EVERY Exhibit without exception.
 Do not stop until you have reached the final clause and final Exhibit in the document.
+
 ═══════════════════════════════════════
 PRECISION RULES — NON-NEGOTIABLE
 ═══════════════════════════════════════
@@ -223,12 +224,6 @@ For IP / INTELLECTUAL PROPERTY clauses:
   covered. Any improvement added AFTER joining belongs to the Company."
 - Never say "may claim" — use "the Company owns" or "vests exclusively in the Company"
 - State irrevocable assignment and moral rights waiver if present
-- For franchise/league/commercial agreements: always check whether Team Marks,
-  branding, or IP created by the weaker party vests in the stronger party on
-  termination without consideration. If so, state explicitly: "All Team Marks,
-  logos, and branding built during this Agreement transfer to [stronger party]
-  for free on termination — the weaker party receives nothing for its brand
-  investment regardless of tenure."
 
 For NON-COMPETE clauses — calculation MANDATORY:
 - State exact duration and scope
@@ -238,48 +233,81 @@ For NON-COMPETE clauses — calculation MANDATORY:
 
 For TERMINATION clauses (employment) and DEFAULT/ACCELERATION clauses (loans):
 - List every trigger with exact threshold
-- Flag any trigger defined solely by the stronger party with no objective threshold
-- State cure period (or absence of one) with exact duration
+- Flag any trigger defined solely by the stronger party with no objective threshold:
+  Employment: "'non-performance as determined by the Company' is a blank cheque
+  to terminate without severance"
+  Loans: "'material adverse change as determined by the Lender' allows the Lender
+  to accelerate the entire outstanding loan at any time without objective trigger"
+- State cure period (or absence) with exact duration
 - State severance (employment) or full acceleration consequence (loans) with numbers
-
-For FINANCIAL TERMS clauses that reference an Exhibit or Schedule:
-- Never say "governed by Exhibit A" — extract and state the actual numbers directly
-- State the full fee schedule with exact amounts and years
-- State the full revenue sharing table with exact percentages for each period
 
 For LOAN DISBURSEMENT clauses:
 - State headline amount, all fees deducted, and net amount actually received
-- Flag explicitly: "Interest is calculated on INR [full amount] but the Borrower
-  only receives INR [net amount] — the Borrower pays interest on INR [gap]
-  they never received"
+- Flag: "Interest is calculated on INR [full amount] but the Borrower only receives
+  INR [net amount] — the Borrower pays interest on INR [gap] they never received"
+- State total repayment and real cost: "INR [total repayment] on INR [net received]
+  = INR [difference] total cost over the loan tenure"
 
 For INTEREST RATE clauses:
 - State contracted rate, EAR, and penal rate — all three if present
 - State penal rate in both monthly and annual terms
+- Bottom line must name all three rates with numbers explicitly
 
 For INSURANCE clauses in loan documents:
-- First check whether two clauses contradict each other on the same product
-- Flag both clause numbers explicitly with opt-out window and total cost
+- If two clauses contradict each other, flag both clause numbers explicitly:
+  "Clause [X] says optional. Clause [Y] has already added INR [amount] to your
+  loan principal by default. You have [Z] days from disbursement to opt out in
+  writing. If you do not, you pay INR [amount] plus interest at [rate]% for
+  [tenure] — approximately INR [total] extra."
 
 For AMENDMENT clauses in loan documents:
-- Flag: "The Lender can raise the interest rate with only 30 days notice"
+- Flag: "The Lender can raise the interest rate, fees, or charges with only
+  30 days notice. The Borrower's only option is to prepay in full — subject
+  to a [X]% prepayment penalty under Clause [Y]. There is no protection
+  against rate increases for the entire loan tenure."
 
 For CROSS-DEFAULT clauses:
-- Flag the full acceleration consequence with exact amounts
+- Flag: "A default on any credit card, loan, or product with [Lender] or any
+  group company triggers default on this loan — the entire outstanding
+  INR [amount] becomes immediately due"
+- Flag the set-off right: "The Lender can debit any of your accounts with
+  them or their group companies without prior notice to recover dues"
+
+For COLLECTION AND RECOVERY clauses:
+- Calculate collection fee in rupees: "[X]% of INR [outstanding] = INR [amount]"
+- Flag: "The Borrower pays the cost of their own debt collection"
+- Flag the right to contact employer and emergency contacts
 
 For DISPUTE RESOLUTION clauses:
-- State who appoints arbitrator
-- For loan/NBFC documents flag Banking Ombudsman waiver as likely unenforceable
+- State who appoints arbitrator — if stronger party: flag structural bias
+- State every forum waived
+- For loan/NBFC documents: "The Banking Ombudsman waiver is unenforceable —
+  the Banking Ombudsman Scheme is established under RBI guidelines and a
+  borrower cannot be made to waive this statutory right by contract"
+- For employment: "Labour tribunal waiver may be unenforceable under the
+  Industrial Disputes Act"
 
 For CONFIDENTIALITY clauses:
-- If perpetual: state "This obligation has no end date — it is perpetual"
+- If perpetual: "This obligation has no end date — it is perpetual"
+- Flag unlimited damages with no cap
+
+For MOONLIGHTING clauses:
+- State "paid or unpaid" scope covers volunteering and open-source
+- State consequence: immediate termination without notice or severance
+
+For SOCIAL MEDIA clauses:
+- Flag that posting on LinkedIn that you work there without approval is a breach
+- State consequence: treated as misconduct = immediate termination
+
+For ASSIGNMENT clauses:
+- Flag loan can be sold to debt collector without Borrower consent
 
 WHY IT MATTERS (1-2 sentences):
 Worst realistic outcome for the weaker party in concrete terms with numbers.
 Never use "may" — state what IS the worst outcome.
 
 NEGOTIATION SUGGESTION:
-Specific alternative with numbers. Never "negotiate this clause" — always say what to ask for.
+Specific alternative with numbers. Never "negotiate this clause" — say what to ask for.
 
 isFavorableToStrongerParty must be boolean true or false — not a string.
 
@@ -317,6 +345,78 @@ const deriveOverallRisk = (terms: JargonTerm[]): 'low' | 'medium' | 'high' => {
   if (terms.some((t) => t.riskLevel === 'high')) return 'high';
   if (terms.some((t) => t.riskLevel === 'medium')) return 'medium';
   return 'low';
+};
+
+// Robust JSON recovery — handles truncated responses from token limit hits
+// Strategy: attempt full parse, then try to salvage a partial clauseAnalysis array
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const safeParseJSON = (raw: string, isClauses = false): any => {
+  const cleaned = raw.replace(/```json\n?|\n?```/g, '').trim();
+
+  // Attempt 1: clean parse
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    // Attempt 2: for clause responses, salvage complete clause objects from a truncated array
+    if (isClauses) {
+      try {
+        // Find the start of the clauseAnalysis array
+        const arrayStart = cleaned.indexOf('"clauseAnalysis"');
+        if (arrayStart !== -1) {
+          const bracketStart = cleaned.indexOf('[', arrayStart);
+          if (bracketStart !== -1) {
+            // Collect all complete clause objects — each ends with a closing }
+            // We walk backwards from the truncation point to find the last complete object
+            let depth = 0;
+            let lastCompleteClose = -1;
+            let inString = false;
+            let escape = false;
+
+            for (let i = bracketStart; i < cleaned.length; i++) {
+              const ch = cleaned[i];
+              if (escape) { escape = false; continue; }
+              if (ch === '\\' && inString) { escape = true; continue; }
+              if (ch === '"') { inString = !inString; continue; }
+              if (inString) continue;
+              if (ch === '{') depth++;
+              if (ch === '}') {
+                depth--;
+                if (depth === 0) lastCompleteClose = i;
+              }
+            }
+
+            if (lastCompleteClose !== -1) {
+              // Reconstruct a valid JSON object with the salvaged clauses
+              const salvaged = cleaned.substring(bracketStart, lastCompleteClose + 1);
+              const recovered = `{"clauseAnalysis":${salvaged}],"termCount":0,"criticalFlagCount":0}`;
+              const result = JSON.parse(recovered);
+              console.warn(`JSON truncation recovery: salvaged ${result.clauseAnalysis?.length ?? 0} clauses`);
+              return result;
+            }
+          }
+        }
+      } catch {
+        // fall through to attempt 3
+      }
+    }
+
+    // Attempt 3: find last complete top-level closing brace
+    try {
+      const lastBrace = cleaned.lastIndexOf('}');
+      if (lastBrace !== -1) {
+        const truncated = cleaned.substring(0, lastBrace + 1);
+        const result = JSON.parse(truncated);
+        console.warn('JSON truncation recovery: used lastIndexOf fallback');
+        return result;
+      }
+    } catch {
+      // fall through
+    }
+
+    // All attempts failed
+    console.error('JSON parse failed after all recovery attempts');
+    throw new Error('Could not parse model response as JSON');
+  }
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -429,7 +529,7 @@ export async function POST(req: NextRequest) {
 
     const userContent = `Output language: ${language === 'hi' ? 'Hindi' : 'English'}\n\nDocument to analyze:\n${text}`;
 
-    console.log('Calling NVIDIA API (2 parallel calls) with text length:', text.length);
+    console.log('Calling Cerebras API (2 parallel calls) with text length:', text.length);
 
     const [summaryResult, clausesResult] = await Promise.all([
       client.chat.completions.create({
@@ -455,8 +555,8 @@ export async function POST(req: NextRequest) {
     const summaryContent = summaryResult.choices[0]?.message?.content;
     const clausesContent = clausesResult.choices[0]?.message?.content;
 
-    console.log('Summary:', summaryContent?.length, 'chars');
-    console.log('Clauses:', clausesContent?.length, 'chars');
+    console.log('Summary:', summaryContent?.length, 'chars | finish:', summaryResult.choices[0]?.finish_reason);
+    console.log('Clauses:', clausesContent?.length, 'chars | finish:', clausesResult.choices[0]?.finish_reason);
 
     if (!summaryContent || !clausesContent) {
       return NextResponse.json<AnalyzeResponse>(
@@ -465,25 +565,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const cleanSummary = summaryContent.replace(/```json\n?|\n?```/g, '').trim();
-const cleanClauses = clausesContent.replace(/```json\n?|\n?```/g, '').trim();
+    const rawSummary = safeParseJSON(summaryContent, false);
+    const rawClauses = safeParseJSON(clausesContent, true);
 
-let rawSummary: any;
-let rawClauses: any;
-
-try {
-  rawSummary = JSON.parse(cleanSummary);
-} catch {
-  const truncated = cleanSummary.substring(0, cleanSummary.lastIndexOf('}') + 1);
-  rawSummary = JSON.parse(truncated);
-}
-
-try {
-  rawClauses = JSON.parse(cleanClauses);
-} catch {
-  const truncated = cleanClauses.substring(0, cleanClauses.lastIndexOf('}') + 1);
-  rawClauses = JSON.parse(truncated);
-}
     const data = mapToAnalysisResult(rawSummary, rawClauses);
     console.log('Final terms count:', data.termCount);
 
