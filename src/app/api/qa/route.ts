@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Groq from 'groq-sdk';
+import OpenAI from 'openai';
 import type { QARequest, QAResponse } from '@/types';
  
 export async function POST(req: NextRequest) {
@@ -21,8 +21,10 @@ export async function POST(req: NextRequest) {
       );
     }
  
-    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
- 
+    const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: process.env.NVIDIA_API_BASE_URL,
+});
     const systemPrompt = `Do not include reasoning steps, internal deliberation, or <think> tags in your response. Respond directly with your answer only.
 You are ArthSaathi, a world-class document intelligence assistant.
 The user has uploaded a document that has already been analyzed, and is now asking
@@ -234,8 +236,8 @@ ${language === 'hi' ? 'Respond in Hindi.' : 'Respond in English.'}`;
     const timeoutId = setTimeout(() => controller.abort(), 55000);
  
     try {
-      const result = await groq.chat.completions.create({
-        model: 'openai/gpt-oss-20b',
+      const result = await client.chat.completions.create({
+    model: process.env.NVIDIA_MODEL ?? 'gpt-oss-120b',
         temperature: 0.2,
         max_tokens: 2000,
         messages: [
@@ -259,21 +261,21 @@ ${language === 'hi' ? 'Respond in Hindi.' : 'Respond in English.'}`;
         success: true,
         answer,
       });
-    } catch (groqError: any) {
+    } catch (apiError: any) {
       clearTimeout(timeoutId);
-      if (groqError?.status === 429) {
+      if (apiError?.status === 429) {
         return NextResponse.json<QAResponse>(
           { success: false, error: 'ArthSaathi is busy right now. Please try again in a moment.' },
           { status: 429 }
         );
       }
-      if (groqError?.status === 413) {
+      if (apiError?.status === 413) {
   return NextResponse.json<QAResponse>(
     { success: false, error: 'Document is too large to process. Please try a shorter document.' },
     { status: 413 }
   );
 }
-      throw groqError;
+      throw apiError;
     }
   } catch (error: any) {
     console.error('QA error:', error);
