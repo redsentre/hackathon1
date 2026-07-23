@@ -190,8 +190,7 @@ Use single quotes instead. For example: write 'Premium' not "Premium".
 
 For documents where clauses are not numbered or titled, treat each
 distinct legal obligation, right, or financial term as a separate
-clause. Do not merge separate obligations into one clause entry
-even if they appear in the same sentence or paragraph.
+clause. Do not merge separate obligations into one clause entry.
 
 isFavorableToStrongerParty must be boolean true or false — not a string.
 
