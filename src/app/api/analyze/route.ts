@@ -362,13 +362,17 @@ const safeParseJSON = (raw: string, isClauses = false): any => {
   // Attempt 1: clean parse, then repair
   try {
     return JSON.parse(cleaned);
-  } catch {
-    try {
-      return JSON.parse(jsonrepair(cleaned));
-    } catch {
-      // fall through to attempt 2
-    }
+  } catch (e1: any) {
+  console.log('Initial parse failed:', e1.message);
+  try {
+    const repaired = jsonrepair(cleaned);
+    console.log('jsonrepair succeeded, attempting parse');
+    return JSON.parse(repaired);
+  } catch (e2: any) {
+    console.log('jsonrepair also failed:', e2.message);
+    // fall through to attempt 2
   }
+}
 
   // Attempt 2: find last complete top-level closing brace
   try {
