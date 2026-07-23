@@ -453,7 +453,7 @@ const mapToAnalysisResult = (summary: any, clauses: any): AnalysisResult => {
     trustScoreLabel: assessment.fairnessLabel ?? '',
   };
 };
-
+console.log('MODEL ENV:', process.env.NVIDIA_MODEL, 'BASE URL:', process.env.NVIDIA_API_BASE_URL);
 export async function POST(req: NextRequest) {
   try {
     console.log('Analysis request received');
