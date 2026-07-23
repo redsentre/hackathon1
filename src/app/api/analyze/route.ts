@@ -415,10 +415,21 @@ const safeParseJSON = (raw: string, isClauses = false): any => {
 
     // All attempts failed
     console.error('JSON parse failed after all recovery attempts');
+    console.error('Failed content length:', cleaned.length);
+    try {
+      JSON.parse(cleaned);
+    } catch (e: any) {
+      const match = e.message.match(/position (\d+)/);
+      if (match) {
+        const pos = parseInt(match[1]);
+        console.error(`Parse error at position ${pos}:`, JSON.stringify(cleaned.substring(pos - 100, pos + 100)));
+      } else {
+        console.error('Parse error message:', e.message);
+      }
+    }
     throw new Error('Could not parse model response as JSON');
   }
-};
-
+}
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mapToAnalysisResult = (summary: any, clauses: any): AnalysisResult => {
   const profile = summary.documentProfile ?? {};
