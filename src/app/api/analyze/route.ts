@@ -569,6 +569,8 @@ export async function POST(req: NextRequest) {
     const rawClauses = safeParseJSON(clausesContent, true);
 
     const data = mapToAnalysisResult(rawSummary, rawClauses);
+    console.log('clauseAnalysis array length:', rawClauses.clauseAnalysis?.length);
+    console.log('mapped terms length:', data.termCount);
     console.log('Final terms count:', data.termCount);
 
     return NextResponse.json<AnalyzeResponse>({
