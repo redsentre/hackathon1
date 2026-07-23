@@ -4,7 +4,7 @@ import { extractTextFromPDF } from '@/lib/pdfParser';
 import { MAX_TEXT_LENGTH, MAX_PDF_SIZE_MB } from '@/lib/constants';
 import type { AnalyzeRequest, AnalyzeResponse, AnalysisResult, JargonTerm } from '@/types';
 
-const MODEL = process.env.NVIDIA_MODEL ?? 'gpt-oss-120b';
+const MODEL = process.env.NVIDIA_MODEL ?? 'llama-3.3-70b';
 
 // ============================================================
 // CALL 1: Document profile, summary, financial snapshot, assessment
