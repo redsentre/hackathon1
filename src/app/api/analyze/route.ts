@@ -30,9 +30,7 @@ in the world.
 Your task: Analyze the document and return ONLY the summary, profile, financial snapshot, and overall assessment.
 Do NOT include clauseAnalysis.
 
-═══════════════════════════════════════
 PRECISION RULES — NON-NEGOTIABLE
-═══════════════════════════════════════
 
 NUMBERS: Always state exact rupee/currency amounts, percentages, timeframes, distances,
 multipliers, and penalties exactly as written. Never approximate.
@@ -41,7 +39,7 @@ FINANCIAL SNAPSHOT:
 - Capture EVERY financial obligation — upfront fees, recurring fees, setup costs,
   penalties, renewal fees, hidden costs
 - For employment contracts: separate fixed vs variable pay and state the guaranteed
-  monthly take-home amount explicitly as (fixed component ÷ 12)
+  monthly take-home amount explicitly as (fixed component divided by 12)
 - For franchise/commercial agreements: state total day-one exposure (all costs needed
   before operations begin), not just the headline fee
 - For loan agreements: state (a) the net amount actually received by the Borrower,
@@ -56,35 +54,30 @@ TOP THREE RISKS — each must contain:
 - The worst realistic outcome for the weaker party in one concrete sentence
 
 CRITICAL FLAGS — for every document, always check and flag if present:
-- Any clause where "cause", "performance", or "material adverse change" is defined
-  solely by the stronger party — this is a blank cheque for acceleration,
-  termination, or penalty without any objective threshold
+- Any clause where cause, performance, or material adverse change is defined
+  solely by the stronger party
 - Any IP clause covering work done OUTSIDE working hours or WITHOUT company resources
 - Any IP clause that does NOT explicitly exclude pre-employment work
 - Any ESOP clause — always state: (a) vesting cliff, (b) forfeiture before cliff,
   (c) exact post-termination exercise window, (d) what happens if window lapses
 - Any probation period that can be extended unilaterally — state maximum possible duration
-- Any non-compete — always calculate: monthly compensation × duration = total paid,
+- Any non-compete — always calculate: monthly compensation x duration = total paid,
   express as percentage of annual salary, flag if under 25% as inadequate
 - Any arbitration clause where the arbitrator is appointed by the stronger party
 - Any clause waiving access to courts, labour tribunals, consumer forums, or the
-  Banking Ombudsman — Banking Ombudsman waiver is likely unenforceable under RBI
-  guidelines as it is a statutory right that cannot be contracted away
+  Banking Ombudsman
 - Any termination or acceleration clause with no cure period or less than 7 days
 - Any confidentiality clause with no end date
 - [LOAN DOCUMENTS] Any clause where interest is calculated on a higher amount than
-  the net disbursed amount — state the exact gap and flag it explicitly
+  the net disbursed amount
 - [LOAN DOCUMENTS] Any insurance or add-on product described as optional in one
-  clause but added by default in another — flag the contradiction by both clause
-  numbers and state the opt-out window and total cost if not opted out
-- [LOAN DOCUMENTS] Any unilateral amendment clause — flag that the Lender can
-  change the interest rate with only 30 days notice and the Borrower's only
-  recourse is to prepay with a penalty
-- [LOAN DOCUMENTS] Any cross-default clause — flag that default on any product
-  with any group company triggers default and acceleration on this loan
+  clause but added by default in another
+- [LOAN DOCUMENTS] Any unilateral amendment clause
+- [LOAN DOCUMENTS] Any cross-default clause
 
 Always respond with valid JSON matching this EXACT structure.
 Do not include any text outside the JSON object.
+When writing string values, never use double quotes inside the string. Use single quotes instead.
 
 {
   "documentProfile": {
@@ -101,9 +94,9 @@ Do not include any text outside the JSON object.
     "governingLaw": "Exact jurisdiction and governing law",
     "effectiveDate": "Date or To be determined"
   },
-  "executiveSummary": "4-5 sentences for a busy professional. State: (1) document type and parties, (2) exact key financial terms with numbers, (3) the top 2-3 specific risks with clause numbers and exact mechanisms, (4) which party holds more power and why. No jargon. Be specific with every number.",
+  "executiveSummary": "4-5 sentences for a busy professional.",
   "financialSnapshot": {
-    "totalCommitmentSummary": "Total financial exposure with exact numbers — for loans: net received vs interest principal vs total repayment and real borrowing cost; for employment: guaranteed monthly take-home (fixed ÷ 12); for franchise: total day-one exposure",
+    "totalCommitmentSummary": "Total financial exposure with exact numbers",
     "immediatePaymentOnSigning": "Exact amount due immediately on signing or null",
     "keyPaymentMilestones": [
       {
@@ -132,11 +125,11 @@ Do not include any text outside the JSON object.
   "sectionSummaries": {
     "parties": "Who the parties are, their roles, and the power dynamic",
     "financialTerms": "Complete summary of all money with exact figures",
-    "intellectualProperty": "Who owns what IP — state if work outside working hours vests in stronger party; state whether pre-employment work is excluded",
+    "intellectualProperty": "Who owns what IP",
     "obligations": "Key ongoing obligations of each party",
-    "termination": "Every exact trigger for termination or acceleration — list each with threshold, timeframe, and whether defined subjectively",
-    "disputeResolution": "How disputes are resolved, who appoints arbitrators, whether courts/tribunals/Banking Ombudsman are waived",
-    "exitAndTransfer": "Post-termination obligations — non-compete, ESOP window, assignment rights, prepayment penalties"
+    "termination": "Every exact trigger for termination or acceleration",
+    "disputeResolution": "How disputes are resolved",
+    "exitAndTransfer": "Post-termination obligations"
   },
   "negotiationPriorityList": [
     {
@@ -147,9 +140,9 @@ Do not include any text outside the JSON object.
     }
   ],
   "regulatoryContext": {
-    "applicableLaws": ["For employment: Industrial Disputes Act; for loans/NBFCs: RBI Fair Practices Code, Banking Ombudsman Scheme 2006; for franchise: Consumer Protection Act"],
+    "applicableLaws": ["Applicable laws"],
     "complianceRequirements": ["Specific compliance obligations"],
-    "potentiallyProblematicClauses": ["Banking Ombudsman waiver likely unenforceable under RBI guidelines; labour tribunal waiver may be unenforceable under Industrial Disputes Act; non-compete enforceability under Section 27 of the Indian Contract Act"]
+    "potentiallyProblematicClauses": ["Problematic clauses"]
   },
   "overallAssessment": {
     "fairnessScore": 50,
@@ -158,9 +151,9 @@ Do not include any text outside the JSON object.
     "recommendation": "one of: Proceed with Caution | Seek Legal Advice Before Signing | Negotiate Key Clauses | Acceptable with Minor Modifications | Do Not Sign Without Major Changes",
     "recommendationReason": "2-3 specific sentences referencing actual clause numbers and mechanisms",
     "topThreeRisks": [
-      "Clause X — [exact mechanism] — [exact numbers/thresholds] — worst outcome: [concrete consequence]",
-      "Clause X — [exact mechanism] — [exact numbers/thresholds] — worst outcome: [concrete consequence]",
-      "Clause X — [exact mechanism] — [exact numbers/thresholds] — worst outcome: [concrete consequence]"
+      "Clause X — exact mechanism — exact numbers/thresholds — worst outcome: concrete consequence",
+      "Clause X — exact mechanism — exact numbers/thresholds — worst outcome: concrete consequence",
+      "Clause X — exact mechanism — exact numbers/thresholds — worst outcome: concrete consequence"
     ]
   }
 }
@@ -179,9 +172,7 @@ Return a clauseAnalysis array with one entry per clause. Do not merge or skip an
 You must cover EVERY clause and EVERY Exhibit without exception.
 Do not stop until you have reached the final clause and final Exhibit in the document.
 
-═══════════════════════════════════════
 PRECISION RULES — NON-NEGOTIABLE
-═══════════════════════════════════════
 
 WHAT IT SAYS (3-5 sentences required):
 Must contain ALL specific numbers, amounts, percentages, timeframes, distances,
@@ -189,126 +180,13 @@ multipliers, and triggers from that clause. State consequences clearly.
 Never generalize — use the exact language and numbers from the document.
 
 LANGUAGE PRECISION — NON-NEGOTIABLE:
-Never use "may" or "could" when the clause uses "shall" or states something
-unconditionally. If the clause is unambiguous, state what IT IS.
-"The Company owns" not "the Company may own."
-"The obligation is perpetual" not "the obligation may be perpetual."
-"The entire loan becomes immediately due" not "the loan may become due."
+Never use may or could when the clause uses shall or states something unconditionally.
+The Company owns — not the Company may own.
+The obligation is perpetual — not the obligation may be perpetual.
+The entire loan becomes immediately due — not the loan may become due.
 
-SPECIFIC PATTERNS TO ALWAYS CATCH:
-
-For COMPENSATION clauses:
-- State fixed vs variable split with exact amounts
-- Calculate guaranteed monthly take-home: fixed component ÷ 12 = INR X
-- State who determines variable pay and on what basis
-- Flag CTC restructuring rights and state the guaranteed floor
-- Be explicit: "Your guaranteed monthly take-home is INR X, not INR Y (total CTC ÷ 12)"
-
-For PROBATION clauses:
-- State initial period AND maximum extension period
-- State total maximum probation duration
-- State notice period during probation with exact hours/days
-- Flag: "The Employee has almost no job security for up to [maximum duration]"
-
-For ESOP / STOCK OPTION clauses — ALL FOUR points MANDATORY:
-- (1) Vesting schedule with exact cliff and post-cliff monthly vesting
-- (2) Forfeiture on termination before cliff: "All [X] options are forfeited"
-- (3) Post-termination exercise window: "Vested options MUST be exercised within
-  [X] days — after that they lapse permanently and cannot be recovered"
-- (4) Company's right to modify ESOP scheme
-
-For IP / INTELLECTUAL PROPERTY clauses:
-- If covers work outside working hours: "This clause covers work done outside
-  working hours and on personal devices — any app, tool, or side project
-  developed during employment belongs to the Company, even if built at home"
-- State pre/post-joining distinction: "Work created BEFORE joining is not
-  covered. Any improvement added AFTER joining belongs to the Company."
-- Never say "may claim" — use "the Company owns" or "vests exclusively in the Company"
-- State irrevocable assignment and moral rights waiver if present
-
-For NON-COMPETE clauses — calculation MANDATORY:
-- State exact duration and scope
-- Calculate: "[amount] × [months] = INR [total] = [X]% of INR [annual] annual salary"
-- Flag if under 25% of annual salary as grossly inadequate
-- Note enforceability under Section 27 of the Indian Contract Act
-
-For TERMINATION clauses (employment) and DEFAULT/ACCELERATION clauses (loans):
-- List every trigger with exact threshold
-- Flag any trigger defined solely by the stronger party with no objective threshold:
-  Employment: "'non-performance as determined by the Company' is a blank cheque
-  to terminate without severance"
-  Loans: "'material adverse change as determined by the Lender' allows the Lender
-  to accelerate the entire outstanding loan at any time without objective trigger"
-- State cure period (or absence) with exact duration
-- State severance (employment) or full acceleration consequence (loans) with numbers
-
-For LOAN DISBURSEMENT clauses:
-- State headline amount, all fees deducted, and net amount actually received
-- Flag: "Interest is calculated on INR [full amount] but the Borrower only receives
-  INR [net amount] — the Borrower pays interest on INR [gap] they never received"
-- State total repayment and real cost: "INR [total repayment] on INR [net received]
-  = INR [difference] total cost over the loan tenure"
-
-For INTEREST RATE clauses:
-- State contracted rate, EAR, and penal rate — all three if present
-- State penal rate in both monthly and annual terms
-- Bottom line must name all three rates with numbers explicitly
-
-For INSURANCE clauses in loan documents:
-- If two clauses contradict each other, flag both clause numbers explicitly:
-  "Clause [X] says optional. Clause [Y] has already added INR [amount] to your
-  loan principal by default. You have [Z] days from disbursement to opt out in
-  writing. If you do not, you pay INR [amount] plus interest at [rate]% for
-  [tenure] — approximately INR [total] extra."
-
-For AMENDMENT clauses in loan documents:
-- Flag: "The Lender can raise the interest rate, fees, or charges with only
-  30 days notice. The Borrower's only option is to prepay in full — subject
-  to a [X]% prepayment penalty under Clause [Y]. There is no protection
-  against rate increases for the entire loan tenure."
-
-For CROSS-DEFAULT clauses:
-- Flag: "A default on any credit card, loan, or product with [Lender] or any
-  group company triggers default on this loan — the entire outstanding
-  INR [amount] becomes immediately due"
-- Flag the set-off right: "The Lender can debit any of your accounts with
-  them or their group companies without prior notice to recover dues"
-
-For COLLECTION AND RECOVERY clauses:
-- Calculate collection fee in rupees: "[X]% of INR [outstanding] = INR [amount]"
-- Flag: "The Borrower pays the cost of their own debt collection"
-- Flag the right to contact employer and emergency contacts
-
-For DISPUTE RESOLUTION clauses:
-- State who appoints arbitrator — if stronger party: flag structural bias
-- State every forum waived
-- For loan/NBFC documents: "The Banking Ombudsman waiver is unenforceable —
-  the Banking Ombudsman Scheme is established under RBI guidelines and a
-  borrower cannot be made to waive this statutory right by contract"
-- For employment: "Labour tribunal waiver may be unenforceable under the
-  Industrial Disputes Act"
-
-For CONFIDENTIALITY clauses:
-- If perpetual: "This obligation has no end date — it is perpetual"
-- Flag unlimited damages with no cap
-
-For MOONLIGHTING clauses:
-- State "paid or unpaid" scope covers volunteering and open-source
-- State consequence: immediate termination without notice or severance
-
-For SOCIAL MEDIA clauses:
-- Flag that posting on LinkedIn that you work there without approval is a breach
-- State consequence: treated as misconduct = immediate termination
-
-For ASSIGNMENT clauses:
-- Flag loan can be sold to debt collector without Borrower consent
-
-WHY IT MATTERS (1-2 sentences):
-Worst realistic outcome for the weaker party in concrete terms with numbers.
-Never use "may" — state what IS the worst outcome.
-
-NEGOTIATION SUGGESTION:
-Specific alternative with numbers. Never "negotiate this clause" — say what to ask for.
+When writing string values in JSON, never use double quotes inside the string.
+Use single quotes instead. For example: write 'Premium' not "Premium".
 
 isFavorableToStrongerParty must be boolean true or false — not a string.
 
@@ -321,7 +199,7 @@ Do not include any text outside the JSON object.
       "clauseId": "Clause 1",
       "clauseTitle": "Short name max 5 words",
       "category": "one of: Financial, Legal Rights, Intellectual Property, Termination, Dispute Resolution, Obligations, Exclusivity, Ownership & Transfer, Governance, Confidentiality, Force Majeure, Indemnity, General",
-      "whatItSays": "3-5 sentences. Plain English with ALL specific numbers, amounts, percentages, timeframes, distances, multipliers, and triggers. State consequences. Never generalize.",
+      "whatItSays": "3-5 sentences. Plain English with ALL specific numbers, amounts, percentages, timeframes. Use single quotes for any quoted terms.",
       "whyItMatters": "1-2 sentences. Worst realistic outcome for the weaker party in concrete terms with numbers.",
       "riskLevel": "low | medium | high | critical",
       "riskBearing": "franchisee | franchisor | both | borrower | lender | employee | employer",
@@ -348,46 +226,103 @@ const deriveOverallRisk = (terms: JargonTerm[]): 'low' | 'medium' | 'high' => {
   return 'low';
 };
 
-// Robust JSON recovery — handles truncated responses from token limit hits
-// Strategy: attempt full parse, then try to salvage a partial clauseAnalysis array
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const safeParseJSON = (raw: string, isClauses = false): any => {
-  const cleaned = raw
+const safeParseJSON = (raw: string): any => {
+  // Step 1: normalize unicode punctuation and strip code fences
+  let cleaned = raw
     .replace(/```json\n?|\n?```/g, '')
     .replace(/[\u2010-\u2015\u2212]/g, '-')
     .replace(/[\u2018\u2019]/g, "'")
     .replace(/[\u201C\u201D]/g, '"')
     .trim();
 
-  // Attempt 1: clean parse, then repair
+  // Step 2: pre-process — escape any unescaped double quotes that appear
+  // inside JSON string values. This catches the model writing "Premium"
+  // inside a string value, which breaks every parser downstream.
+  // Strategy: walk character by character tracking whether we are inside
+  // a JSON string, and escape any " that is not already escaped and is
+  // not the opening or closing delimiter of the string.
+  const chars = cleaned.split('');
+  let inString = false;
+  let escaped = false;
+  const result: string[] = [];
+
+  for (let i = 0; i < chars.length; i++) {
+    const ch = chars[i];
+
+    if (escaped) {
+      result.push(ch);
+      escaped = false;
+      continue;
+    }
+
+    if (ch === '\\') {
+      result.push(ch);
+      escaped = true;
+      continue;
+    }
+
+    if (ch === '"') {
+      if (!inString) {
+        // Opening delimiter — enter string mode
+        inString = true;
+        result.push(ch);
+      } else {
+        // Could be closing delimiter or an unescaped inner quote.
+        // Look ahead: after this quote, skip whitespace and check if
+        // next non-whitespace char is a JSON structural character
+        // (: , } ]) — if so, this is a closing delimiter.
+        let j = i + 1;
+        while (j < chars.length && /\s/.test(chars[j])) j++;
+        const next = chars[j];
+        if (next === ':' || next === ',' || next === '}' || next === ']') {
+          // Closing delimiter
+          inString = false;
+          result.push(ch);
+        } else {
+          // Unescaped inner quote — escape it
+          result.push('\\');
+          result.push(ch);
+        }
+      }
+      continue;
+    }
+
+    result.push(ch);
+  }
+
+  cleaned = result.join('');
+
+  // Step 3: attempt clean parse
   try {
     return JSON.parse(cleaned);
   } catch (e1: any) {
-  console.log('Initial parse failed:', e1.message);
-  try {
-    const repaired = jsonrepair(cleaned);
-    console.log('jsonrepair succeeded, attempting parse');
-    return JSON.parse(repaired);
-  } catch (e2: any) {
-    console.log('jsonrepair also failed:', e2.message);
-    // fall through to attempt 2
-  }
-}
+    console.log('Initial parse failed:', e1.message);
 
-  // Attempt 2: find last complete top-level closing brace
+    // Step 4: jsonrepair on the pre-processed string
+    try {
+      const repaired = jsonrepair(cleaned);
+      console.log('jsonrepair succeeded');
+      return JSON.parse(repaired);
+    } catch (e2: any) {
+      console.log('jsonrepair also failed:', e2.message);
+    }
+  }
+
+  // Step 5: lastIndexOf fallback + jsonrepair on original cleaned
   try {
     const lastBrace = cleaned.lastIndexOf('}');
     if (lastBrace !== -1) {
       const truncated = cleaned.substring(0, lastBrace + 1);
-      const result = JSON.parse(truncated);
-      console.warn('JSON truncation recovery: used lastIndexOf fallback');
+      const result = JSON.parse(jsonrepair(truncated));
+      console.warn('JSON recovery: used lastIndexOf + jsonrepair fallback');
       return result;
     }
   } catch {
     // fall through
   }
 
-  // All attempts failed
+  // All attempts failed — log context around the error position for debugging
   console.error('JSON parse failed after all recovery attempts');
   console.error('Failed content length:', cleaned.length);
   try {
@@ -403,6 +338,7 @@ const safeParseJSON = (raw: string, isClauses = false): any => {
   }
   throw new Error('Could not parse model response as JSON');
 };
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mapToAnalysisResult = (summary: any, clauses: any): AnalysisResult => {
   const profile = summary.documentProfile ?? {};
@@ -437,7 +373,9 @@ const mapToAnalysisResult = (summary: any, clauses: any): AnalysisResult => {
     trustScoreLabel: assessment.fairnessLabel ?? '',
   };
 };
+
 console.log('MODEL ENV:', process.env.NVIDIA_MODEL, 'BASE URL:', process.env.NVIDIA_API_BASE_URL);
+
 export async function POST(req: NextRequest) {
   try {
     console.log('Analysis request received');
@@ -520,6 +458,7 @@ export async function POST(req: NextRequest) {
         model: MODEL,
         temperature: 0.1,
         max_tokens: 6000,
+        response_format: { type: 'json_object' },
         messages: [
           { role: 'system', content: SYSTEM_PROMPT_SUMMARY },
           { role: 'user', content: userContent },
@@ -529,6 +468,7 @@ export async function POST(req: NextRequest) {
         model: MODEL,
         temperature: 0.1,
         max_tokens: 8192,
+        response_format: { type: 'json_object' },
         messages: [
           { role: 'system', content: SYSTEM_PROMPT_CLAUSES },
           { role: 'user', content: userContent },
@@ -538,6 +478,7 @@ export async function POST(req: NextRequest) {
 
     const summaryContent = summaryResult.choices[0]?.message?.content;
     const clausesContent = clausesResult.choices[0]?.message?.content;
+
     console.log('Raw summary (first 1000):', summaryContent?.substring(0, 1000));
     console.log('Raw summary (last 500):', summaryContent?.substring((summaryContent?.length ?? 0) - 500));
     console.log('Raw clauses (first 500):', clausesContent?.substring(0, 500));
@@ -551,8 +492,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const rawSummary = safeParseJSON(summaryContent, false);
-    const rawClauses = safeParseJSON(clausesContent, true);
+    const rawSummary = safeParseJSON(summaryContent);
+    const rawClauses = safeParseJSON(clausesContent);
 
     const data = mapToAnalysisResult(rawSummary, rawClauses);
     console.log('clauseAnalysis array length:', rawClauses.clauseAnalysis?.length);
