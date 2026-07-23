@@ -237,7 +237,7 @@ ${language === 'hi' ? 'Respond in Hindi.' : 'Respond in English.'}`;
  
     try {
       const result = await client.chat.completions.create({
-    model: process.env.NVIDIA_MODEL ??'gemma-4-31b',
+    model: process.env.NVIDIA_MODEL ??'gpt-oss-120b',
         temperature: 0.2,
         max_tokens: 2000,
         messages: [
