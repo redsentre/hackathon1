@@ -188,6 +188,11 @@ The entire loan becomes immediately due — not the loan may become due.
 When writing string values in JSON, never use double quotes inside the string.
 Use single quotes instead. For example: write 'Premium' not "Premium".
 
+For documents where clauses are not numbered or titled, treat each
+distinct legal obligation, right, or financial term as a separate
+clause. Do not merge separate obligations into one clause entry
+even if they appear in the same sentence or paragraph.
+
 isFavorableToStrongerParty must be boolean true or false — not a string.
 
 Always respond with valid JSON matching this EXACT structure.
@@ -456,7 +461,7 @@ export async function POST(req: NextRequest) {
     const [summaryResult, clausesResult] = await Promise.all([
       client.chat.completions.create({
         model: MODEL,
-        temperature: 0.1,
+        temperature: 0,
         max_tokens: 6000,
         response_format: { type: 'json_object' },
         messages: [
@@ -466,7 +471,7 @@ export async function POST(req: NextRequest) {
       }),
       client.chat.completions.create({
         model: MODEL,
-        temperature: 0.1,
+        temperature: 0,
         max_tokens: 8192,
         response_format: { type: 'json_object' },
         messages: [
