@@ -554,7 +554,8 @@ export async function POST(req: NextRequest) {
 
     const summaryContent = summaryResult.choices[0]?.message?.content;
     const clausesContent = clausesResult.choices[0]?.message?.content;
-
+    console.log('Raw summary (first 500):', summaryContent?.substring(0, 500));
+    console.log('Raw clauses (first 500):', clausesContent?.substring(0, 500));
     console.log('Summary:', summaryContent?.length, 'chars | finish:', summaryResult.choices[0]?.finish_reason);
     console.log('Clauses:', clausesContent?.length, 'chars | finish:', clausesResult.choices[0]?.finish_reason);
 
