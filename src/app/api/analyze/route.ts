@@ -351,7 +351,12 @@ const deriveOverallRisk = (terms: JargonTerm[]): 'low' | 'medium' | 'high' => {
 // Strategy: attempt full parse, then try to salvage a partial clauseAnalysis array
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const safeParseJSON = (raw: string, isClauses = false): any => {
-  const cleaned = raw.replace(/```json\n?|\n?```/g, '').trim();
+  const cleaned = raw
+  .replace(/```json\n?|\n?```/g, '')
+  .replace(/[\u2010-\u2015\u2212]/g, '-')  // replace typographic hyphens/dashes with ASCII hyphen
+  .replace(/[\u2018\u2019]/g, "'")          // replace smart single quotes
+  .replace(/[\u201C\u201D]/g, '"')          // replace smart double quotes
+  .trim();
 
   // Attempt 1: clean parse
   try {
