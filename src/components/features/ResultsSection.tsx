@@ -179,7 +179,7 @@ Predatory Clauses: ${result.predatoryCount}
             className="grid md:grid-cols-2 gap-4"
           >
             {filteredTerms.map((term, idx) => (
-              <TermCard key={term.term} term={term} index={idx} />
+              <TermCard key={`${term.term}-${idx}`} term={term} index={idx} />
             ))}
           </motion.div>
         )}
