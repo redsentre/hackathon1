@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { extractTextFromPDF } from '@/lib/pdfParser';
+import { jsonrepair } from 'jsonrepair';
 import { MAX_TEXT_LENGTH, MAX_PDF_SIZE_MB } from '@/lib/constants';
 import type { AnalyzeRequest, AnalyzeResponse, AnalysisResult, JargonTerm } from '@/types';
 
@@ -352,89 +353,52 @@ const deriveOverallRisk = (terms: JargonTerm[]): 'low' | 'medium' | 'high' => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const safeParseJSON = (raw: string, isClauses = false): any => {
   const cleaned = raw
-  .replace(/```json\n?|\n?```/g, '')
-  .replace(/[\u2010-\u2015\u2212]/g, '-')  // replace typographic hyphens/dashes with ASCII hyphen
-  .replace(/[\u2018\u2019]/g, "'")          // replace smart single quotes
-  .replace(/[\u201C\u201D]/g, '"')          // replace smart double quotes
-  .trim();
+    .replace(/```json\n?|\n?```/g, '')
+    .replace(/[\u2010-\u2015\u2212]/g, '-')
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .trim();
 
-  // Attempt 1: clean parse
+  // Attempt 1: clean parse, then repair
   try {
     return JSON.parse(cleaned);
   } catch {
-    // Attempt 2: for clause responses, salvage complete clause objects from a truncated array
-    if (isClauses) {
-      try {
-        // Find the start of the clauseAnalysis array
-        const arrayStart = cleaned.indexOf('"clauseAnalysis"');
-        if (arrayStart !== -1) {
-          const bracketStart = cleaned.indexOf('[', arrayStart);
-          if (bracketStart !== -1) {
-            // Collect all complete clause objects — each ends with a closing }
-            // We walk backwards from the truncation point to find the last complete object
-            let depth = 0;
-            let lastCompleteClose = -1;
-            let inString = false;
-            let escape = false;
-
-            for (let i = bracketStart; i < cleaned.length; i++) {
-              const ch = cleaned[i];
-              if (escape) { escape = false; continue; }
-              if (ch === '\\' && inString) { escape = true; continue; }
-              if (ch === '"') { inString = !inString; continue; }
-              if (inString) continue;
-              if (ch === '{') depth++;
-              if (ch === '}') {
-                depth--;
-                if (depth === 0) lastCompleteClose = i;
-              }
-            }
-
-            if (lastCompleteClose !== -1) {
-              // Reconstruct a valid JSON object with the salvaged clauses
-              const salvaged = cleaned.substring(bracketStart, lastCompleteClose + 1);
-              const recovered = `{"clauseAnalysis":${salvaged}],"termCount":0,"criticalFlagCount":0}`;
-              const result = JSON.parse(recovered);
-              console.warn(`JSON truncation recovery: salvaged ${result.clauseAnalysis?.length ?? 0} clauses`);
-              return result;
-            }
-          }
-        }
-      } catch {
-        // fall through to attempt 3
-      }
-    }
-
-    // Attempt 3: find last complete top-level closing brace
     try {
-      const lastBrace = cleaned.lastIndexOf('}');
-      if (lastBrace !== -1) {
-        const truncated = cleaned.substring(0, lastBrace + 1);
-        const result = JSON.parse(truncated);
-        console.warn('JSON truncation recovery: used lastIndexOf fallback');
-        return result;
-      }
+      return JSON.parse(jsonrepair(cleaned));
     } catch {
-      // fall through
+      // fall through to attempt 2
     }
-
-    // All attempts failed
-    console.error('JSON parse failed after all recovery attempts');
-    console.error('Failed content length:', cleaned.length);
-    try {
-      JSON.parse(cleaned);
-    } catch (e: any) {
-      const match = e.message.match(/position (\d+)/);
-      if (match) {
-        const pos = parseInt(match[1]);
-        console.error(`Parse error at position ${pos}:`, JSON.stringify(cleaned.substring(pos - 100, pos + 100)));
-      } else {
-        console.error('Parse error message:', e.message);
-      }
-    }
-    throw new Error('Could not parse model response as JSON');
   }
-}
+
+  // Attempt 2: find last complete top-level closing brace
+  try {
+    const lastBrace = cleaned.lastIndexOf('}');
+    if (lastBrace !== -1) {
+      const truncated = cleaned.substring(0, lastBrace + 1);
+      const result = JSON.parse(truncated);
+      console.warn('JSON truncation recovery: used lastIndexOf fallback');
+      return result;
+    }
+  } catch {
+    // fall through
+  }
+
+  // All attempts failed
+  console.error('JSON parse failed after all recovery attempts');
+  console.error('Failed content length:', cleaned.length);
+  try {
+    JSON.parse(cleaned);
+  } catch (e: any) {
+    const match = e.message.match(/position (\d+)/);
+    if (match) {
+      const pos = parseInt(match[1]);
+      console.error(`Parse error at position ${pos}:`, JSON.stringify(cleaned.substring(pos - 100, pos + 100)));
+    } else {
+      console.error('Parse error message:', e.message);
+    }
+  }
+  throw new Error('Could not parse model response as JSON');
+};
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mapToAnalysisResult = (summary: any, clauses: any): AnalysisResult => {
   const profile = summary.documentProfile ?? {};
