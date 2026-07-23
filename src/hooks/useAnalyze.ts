@@ -51,7 +51,7 @@ export function useAnalyze(): UseAnalyzeReturn {
     setAnalyzedFileName(null);
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000);
+    const timeoutId = setTimeout(() => controller.abort(), 180000);
     const startTime = Date.now();
 
     try {
@@ -106,7 +106,7 @@ export function useAnalyze(): UseAnalyzeReturn {
     setInputText('');
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000);
+    const timeoutId = setTimeout(() => controller.abort(), 1800000);
     const startTime = Date.now();
 
     try {
