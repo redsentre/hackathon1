@@ -19,7 +19,7 @@ const ResultsSection = dynamic(
 
 export default function Home() {
   const resultsRef = useRef<HTMLDivElement>(null);
-  const { isLoading, result, documentText, analyzeText, reset } = useAnalyze();
+  const { isLoading, result, documentText, analyzeText, analyzePDF, reset } = useAnalyze();
   const [language, setLanguage] = useState<Language>('en');
 
   const handleAnalyze = useCallback((text: string, lang: Language) => {
@@ -97,6 +97,7 @@ export default function Home() {
         <section className="max-w-4xl mx-auto px-4 pb-16">
           <InputSection
             onAnalyze={handleAnalyze}
+            onAnalyzePDF={analyzePDF}
             isLoading={isLoading}
             language={language}
             onLanguageChange={setLanguage}

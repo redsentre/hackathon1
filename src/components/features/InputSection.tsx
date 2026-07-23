@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/Card';
 import { LanguageToggle } from '@/components/layout/LanguageToggle';
@@ -12,13 +12,21 @@ type InputTab = 'text' | 'pdf';
 
 interface InputSectionProps {
   onAnalyze: (text: string, language: Language) => void;
+  onAnalyzePDF: (file: File, language: Language) => void;
   isLoading: boolean;
   className?: string;
   language?: Language;
   onLanguageChange?: (lang: Language) => void;
 }
 
-export function InputSection({ onAnalyze, isLoading, className = '', language: propLanguage, onLanguageChange }: InputSectionProps) {
+export function InputSection({
+  onAnalyze,
+  onAnalyzePDF,
+  isLoading,
+  className = '',
+  language: propLanguage,
+  onLanguageChange,
+}: InputSectionProps) {
   const [activeTab, setActiveTab] = useState<InputTab>('text');
   const [internalLanguage, setInternalLanguage] = useState<Language>('en');
 
@@ -29,9 +37,9 @@ export function InputSection({ onAnalyze, isLoading, className = '', language: p
     onAnalyze(text, language);
   }, [onAnalyze, language]);
 
-  const handleFileExtracted = useCallback((text: string) => {
-    onAnalyze(text, language);
-  }, [onAnalyze, language]);
+  const handleFileSelected = useCallback((file: File) => {
+    onAnalyzePDF(file, language);
+  }, [onAnalyzePDF, language]);
 
   const handleTabChange = useCallback((tab: InputTab) => {
     setActiveTab(tab);
@@ -51,49 +59,49 @@ export function InputSection({ onAnalyze, isLoading, className = '', language: p
       transition={{ duration: 0.5 }}
     >
       <Card className={`p-6 ${className}`}>
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex gap-1" role="tablist">
-          <button
-            onClick={() => handleTabChange('text')}
-            role="tab"
-            aria-selected={activeTab === 'text'}
-            aria-controls="text-panel"
-            className={`px-4 py-2 text-sm font-medium transition-all relative ${
-              activeTab === 'text' ? 'text-foreground' : 'text-muted hover:text-foreground'
-            }`}
-          >
-            Paste Text
-            {activeTab === 'text' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
-            )}
-          </button>
-          <button
-            onClick={() => handleTabChange('pdf')}
-            role="tab"
-            aria-selected={activeTab === 'pdf'}
-            aria-controls="pdf-panel"
-            className={`px-4 py-2 text-sm font-medium transition-all relative ${
-              activeTab === 'pdf' ? 'text-foreground' : 'text-muted hover:text-foreground'
-            }`}
-          >
-            Upload PDF
-            {activeTab === 'pdf' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
-            )}
-          </button>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex gap-1" role="tablist">
+            <button
+              onClick={() => handleTabChange('text')}
+              role="tab"
+              aria-selected={activeTab === 'text'}
+              aria-controls="text-panel"
+              className={`px-4 py-2 text-sm font-medium transition-all relative ${
+                activeTab === 'text' ? 'text-foreground' : 'text-muted hover:text-foreground'
+              }`}
+            >
+              Paste Text
+              {activeTab === 'text' && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
+              )}
+            </button>
+            <button
+              onClick={() => handleTabChange('pdf')}
+              role="tab"
+              aria-selected={activeTab === 'pdf'}
+              aria-controls="pdf-panel"
+              className={`px-4 py-2 text-sm font-medium transition-all relative ${
+                activeTab === 'pdf' ? 'text-foreground' : 'text-muted hover:text-foreground'
+              }`}
+            >
+              Upload PDF
+              {activeTab === 'pdf' && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
+              )}
+            </button>
+          </div>
+          <LanguageToggle language={language} onLanguageChange={handleLanguageChange} />
         </div>
-        <LanguageToggle language={language} onLanguageChange={handleLanguageChange} />
-      </div>
 
-      {activeTab === 'text' ? (
-        <div id="text-panel" role="tabpanel" aria-labelledby="text-tab">
-          <TextInput onAnalyze={handleAnalyze} isLoading={isLoading} />
-        </div>
-      ) : (
-        <div id="pdf-panel" role="tabpanel" aria-labelledby="pdf-tab">
-          <PdfUpload onFileExtracted={handleFileExtracted} isLoading={isLoading} />
-        </div>
-      )}
+        {activeTab === 'text' ? (
+          <div id="text-panel" role="tabpanel" aria-labelledby="text-tab">
+            <TextInput onAnalyze={handleAnalyze} isLoading={isLoading} />
+          </div>
+        ) : (
+          <div id="pdf-panel" role="tabpanel" aria-labelledby="pdf-tab">
+            <PdfUpload onFileSelected={handleFileSelected} isLoading={isLoading} />
+          </div>
+        )}
       </Card>
     </motion.div>
   );
