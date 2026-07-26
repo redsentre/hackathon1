@@ -65,7 +65,7 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-lg md:text-xl text-muted mb-8"
             >
-              ArthSaathi translates every term — instantly, privately, for free.
+              ArthSaathi decodes every clause in your loan agreement, T&C, or insurance policy with risks, red flags, real costs. Instantly and Privately.
             </motion.p>
 
             <motion.div
@@ -75,11 +75,18 @@ export default function Home() {
               className="flex flex-wrap justify-center gap-4 mb-12"
             >
               <div className="px-4 py-2 rounded-full bg-secondary-1 border border-primary/10 text-sm">
-                <span className="text-primary font-bold">27%</span> Financial Literacy in India
+                <span className="text-danger font-bold"> Only 27%</span> financial literacy in India - NCFE 2019
               </div>
               <div className="px-4 py-2 rounded-full bg-secondary-1 border border-primary/10 text-sm">
-                <span className="text-danger font-bold">85%</span> abandon decisions due to jargon
+                <span className="text-primary font-bold">76%</span> of Indians have never read a loan agreement fully before signing - RBI Consumer Survey 2022
               </div>
+              <div className="px-4 py-2 rounded-full bg-secondary-1 border border-primary/10 text-sm">
+                <span className="text-danger font-bold">Only 6%</span> of Indians under 24 are credit-active vs 66% in the US - TransUnion CIBIL
+              </div>
+              <div className="px-4 py-2 rounded-full bg-secondary-1 border border-primary/10 text-sm">
+                <span className="text-primary font-bold">44%</span> of Gen Z report daily financial anxiety - Deloitte Global 2024
+              </div>
+              
             </motion.div>
 
             <motion.div
@@ -179,7 +186,7 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-3">
                 <Globe className="w-5 h-5 text-primary flex-shrink-0" />
-                <span className="text-sm text-muted">No data stored</span>
+                <span className="text-sm text-muted">No data stored / No information is retained</span>
               </div>
               <div className="flex items-center gap-3">
                 <Heart className="w-5 h-5 text-primary flex-shrink-0" />
